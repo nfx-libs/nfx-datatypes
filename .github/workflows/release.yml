@@ -1,0 +1,444 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g., 1.0.0). If empty, uses current commit."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  #============================================================================
+  # Create release
+  #============================================================================
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0 # Fetch all history and tags
+
+      - name: Extract tag name
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Creating release for tag: $TAG"
+
+          # Get previous release tag (excludes pre-releases like -rc1, -alpha, etc.)
+          PREV_TAG=$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | grep -v "^$TAG$" | head -1)
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+          echo "Previous release tag: $PREV_TAG"
+
+          # Create GitHub-compatible anchor for CHANGELOG link
+          # GitHub converts "## [X.Y.Z] - YYYY-MM-DD" to "#xyz---yyyy-mm-dd"
+          ANCHOR=$(echo "$TAG" | sed 's/\.//g')
+          DATE=$(date -u +%Y-%m-%d)
+          FULL_ANCHOR="${ANCHOR}---${DATE}"
+          echo "anchor=$FULL_ANCHOR" >> $GITHUB_OUTPUT
+          echo "Changelog anchor: #$FULL_ANCHOR"
+
+      - name: Verify tag format
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "::warning::Tag '$TAG' doesn't follow semantic versioning (X.Y.Z)"
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: nfx-datatypes ${{ steps.tag.outputs.tag }}
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          body: |
+            nfx-datatypes ${{ steps.tag.outputs.tag }} has been released.
+
+            📜 [Changelog](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md#${{ steps.tag.outputs.anchor }})
+
+  #============================================================================
+  # Build documentation
+  #============================================================================
+
+  build-documentation:
+    name: Build Documentation
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.create-release.outputs.tag }}
+
+      - name: Cache Doxygen
+        id: cache-doxygen
+        uses: actions/cache@v4
+        with:
+          path: ~/doxygen-1.15.0
+          key: doxygen-1.15.0-linux
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build graphviz
+
+          if [ ! -f ~/doxygen-1.15.0/bin/doxygen ]; then
+            wget https://www.doxygen.nl/files/doxygen-1.15.0.linux.bin.tar.gz
+            tar -xzf doxygen-1.15.0.linux.bin.tar.gz -C ~/
+          fi
+
+          sudo cp ~/doxygen-1.15.0/bin/doxygen /usr/local/bin/
+          doxygen --version
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DNFX_DATATYPES_BUILD_DOCUMENTATION=ON
+
+      - name: Build Documentation
+        run: cmake --build build --target nfx-datatypes-documentation
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: documentation
+          path: build/doc/html/
+          retention-days: 1
+
+  #============================================================================
+  # Package documentation
+  #============================================================================
+
+  package-documentation:
+    name: Documentation Package
+    needs: [create-release, build-documentation]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download documentation
+        uses: actions/download-artifact@v5
+        with:
+          name: documentation
+          path: nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation
+
+      - name: Create documentation archive
+        run: |
+          tar -czf nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.tar.gz nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation/
+          zip -r nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.zip nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation/
+
+      - name: Generate checksums
+        run: |
+          sha256sum nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.tar.gz > SHA256SUMS-docs.txt
+          sha256sum nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.zip >> SHA256SUMS-docs.txt
+          cat SHA256SUMS-docs.txt
+
+      - name: Upload documentation packages
+        uses: actions/upload-artifact@v5
+        with:
+          name: documentation-packages
+          path: |
+            nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.tar.gz
+            nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.zip
+            SHA256SUMS-docs.txt
+          retention-days: 7
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.tag }}
+          draft: true
+          files: |
+            nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.tar.gz
+            nfx-datatypes-${{ needs.create-release.outputs.tag }}-Documentation.zip
+            SHA256SUMS-docs.txt
+
+  #============================================================================
+  # Build Linux packages (GCC)
+  #============================================================================
+
+  build-linux-gcc:
+    name: Linux GCC Packages
+    needs: [create-release, build-documentation]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.create-release.outputs.tag }}
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: linux-gcc-release
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build rpm ccache
+
+      - name: Install GCC-14
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+          sudo apt-get install -y g++-14
+          g++-14 --version
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DNFX_DATATYPES_BUILD_STATIC=ON \
+            -DNFX_DATATYPES_BUILD_SHARED=ON \
+            -DNFX_DATATYPES_BUILD_TESTS=OFF \
+            -DNFX_DATATYPES_BUILD_SAMPLES=OFF \
+            -DNFX_DATATYPES_BUILD_BENCHMARKS=OFF \
+            -DNFX_DATATYPES_BUILD_DOCUMENTATION=ON \
+            -DNFX_DATATYPES_INSTALL_PROJECT=ON \
+            -DNFX_DATATYPES_PACKAGE_ARCHIVE=ON \
+            -DNFX_DATATYPES_PACKAGE_DEB=ON \
+            -DNFX_DATATYPES_PACKAGE_RPM=ON
+
+      - name: Download documentation
+        uses: actions/download-artifact@v5
+        with:
+          name: documentation
+          path: build/doc/html
+
+      - name: Create documentation symlink
+        run: |
+          cd build/doc
+          ln -s html/index.html index.html
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Generate packages
+        run: |
+          cd build
+          cpack -C Release
+
+      - name: Verify packages created
+        run: |
+          echo "Packages created:"
+          ls -lh build/packages/
+
+          # Verify expected package types exist
+          PACKAGE_COUNT=$(ls -1 build/packages/*.{deb,rpm,tar.gz} 2>/dev/null | wc -l)
+          if [ "$PACKAGE_COUNT" -eq 0 ]; then
+            echo "::error::No packages were created!"
+            exit 1
+          fi
+          echo "Found $PACKAGE_COUNT package(s)"
+
+      - name: Generate checksums
+        run: |
+          cd build/packages
+          sha256sum *.deb *.rpm *.tar.gz > SHA256SUMS.txt 2>/dev/null || true
+          cat SHA256SUMS.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: linux-gcc-packages
+          path: build/packages/
+          retention-days: 7
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.tag }}
+          draft: true
+          files: |
+            build/packages/*.deb
+            build/packages/*.rpm
+            build/packages/*.tar.gz
+            build/packages/SHA256SUMS.txt
+
+  #============================================================================
+  # Build Windows packages (MSVC)
+  #============================================================================
+
+  build-windows-msvc:
+    name: Windows MSVC Packages
+    needs: [create-release, build-documentation]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.create-release.outputs.tag }}
+
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install dependencies
+        run: choco install wixtoolset ninja -y
+
+      - name: Verify WiX installation
+        run: |
+          where.exe candle
+          where.exe light
+          candle -?
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G Ninja `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCPACK_SYSTEM_NAME=MSVC `
+            -DNFX_DATATYPES_BUILD_STATIC=ON `
+            -DNFX_DATATYPES_BUILD_SHARED=ON `
+            -DNFX_DATATYPES_BUILD_TESTS=OFF `
+            -DNFX_DATATYPES_BUILD_SAMPLES=OFF `
+            -DNFX_DATATYPES_BUILD_BENCHMARKS=OFF `
+            -DNFX_DATATYPES_BUILD_DOCUMENTATION=ON `
+            -DNFX_DATATYPES_INSTALL_PROJECT=ON `
+            -DNFX_DATATYPES_PACKAGE_ARCHIVE=ON `
+            -DNFX_DATATYPES_PACKAGE_WIX=ON
+
+      - name: Download documentation
+        uses: actions/download-artifact@v5
+        with:
+          name: documentation
+          path: build/doc/html
+
+      - name: Create Windows batch file to open documentation
+        run: |
+          New-Item -ItemType Directory -Force -Path build/doc
+          Set-Content -Path "build/doc/index.html.cmd" -Value "@echo off"
+          Add-Content -Path "build/doc/index.html.cmd" -Value "start `"`" `"%~dp0html\index.html`""
+          Write-Host "Created portable batch file: index.html.cmd"
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Generate packages
+        run: |
+          cd build
+          cpack -C Release
+
+      - name: Verify packages created
+        run: |
+          Write-Host "Packages created:"
+          Get-ChildItem build/packages/ | Format-Table Name, Length
+
+          $packageCount = (Get-ChildItem build/packages/ -Include *.msi,*.zip -Recurse).Count
+          if ($packageCount -eq 0) {
+            Write-Host "::error::No packages were created!"
+            exit 1
+          }
+          Write-Host "Found $packageCount package(s)"
+
+      - name: Generate checksums
+        run: |
+          cd build/packages
+          Get-ChildItem -Include *.msi,*.zip -Recurse | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash
+            "$hash  $($_.Name)" | Out-File -Append SHA256SUMS.txt -Encoding ASCII
+          }
+          Get-Content SHA256SUMS.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: windows-msvc-packages
+          path: build/packages/
+          retention-days: 7
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.tag }}
+          draft: true
+          files: |
+            build/packages/*.msi
+            build/packages/*.exe
+            build/packages/*MSVC*.zip
+            build/packages/SHA256SUMS.txt
+
+  #============================================================================
+  # Build source package
+  #============================================================================
+
+  build-source:
+    name: Source Package
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.create-release.outputs.tag }}
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DNFX_DATATYPES_PACKAGE_SOURCE=ON
+
+      - name: Generate source package
+        run: |
+          cd build
+          cpack --config CPackSourceConfig.cmake
+
+      - name: Verify source package created
+        run: |
+          echo "Source packages created:"
+          ls -lh build/packages/
+
+          PACKAGE_COUNT=$(ls -1 build/packages/*Source* 2>/dev/null | wc -l)
+          if [ "$PACKAGE_COUNT" -eq 0 ]; then
+            echo "::error::No source packages were created!"
+            exit 1
+          fi
+          echo "Found $PACKAGE_COUNT source package(s)"
+
+      - name: Generate checksums
+        run: |
+          cd build/packages
+          sha256sum *Source* > SHA256SUMS-source.txt 2>/dev/null || true
+          cat SHA256SUMS-source.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: source-packages
+          path: build/packages/
+          retention-days: 7
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.create-release.outputs.tag }}
+          draft: true
+          files: |
+            build/packages/*Source*
+            build/packages/SHA256SUMS-source.txt

@@ -1,0 +1,99 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please describe what you'd like to see added.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm always frustrated when...
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like
+      placeholder: I would like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe alternatives you've considered
+      placeholder: I also thought about...
+    validations:
+      required: false
+
+  - type: textarea
+    id: example
+    attributes:
+      label: API Example
+      description: How would you like to use this feature? (code example)
+      render: cpp
+      placeholder: |
+        #include <nfx/datatypes/Decimal.h>
+        #include <nfx/datatypes/Int128.h>
+
+        int main() {
+            // Example usage of proposed feature
+            nfx::datatypes::Decimal price{"123.45"};
+            nfx::datatypes::Int128 largeNumber{12345678901234567890LL};
+            
+            // Your proposed API usage here
+        }
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical - Blocking my use of the library
+        - High - Would significantly improve my workflow
+        - Medium - Nice to have
+        - Low - Minor improvement
+    validations:
+      required: false
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Breaking Change
+      description: Would this be a breaking change to existing APIs?
+      options:
+        - "No - Fully backward compatible"
+        - "Yes - Would break existing code"
+        - "Not sure"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or references about the feature request here
+      placeholder: Links to similar features in other libraries, use cases, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be willing to contribute this feature?
+      options:
+        - label: I am willing to submit a pull request for this feature
+          required: false

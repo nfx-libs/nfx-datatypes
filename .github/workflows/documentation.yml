@@ -1,0 +1,77 @@
+name: Generate Documentation
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "include/**"
+      - "doc/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - ".github/workflows/documentation.yml"
+      - "**/CMakeLists.txt"
+      - "**/*.cmake"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cache Doxygen
+        id: cache-doxygen
+        uses: actions/cache@v4
+        with:
+          path: ~/doxygen-1.15.0
+          key: doxygen-1.15.0-linux
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+
+          if [ ! -f ~/doxygen-1.15.0/bin/doxygen ]; then
+            wget https://www.doxygen.nl/files/doxygen-1.15.0.linux.bin.tar.gz
+            tar -xzf doxygen-1.15.0.linux.bin.tar.gz -C ~/
+          fi
+
+          sudo cp ~/doxygen-1.15.0/bin/doxygen /usr/local/bin/
+          doxygen --version
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -DNFX_DATATYPES_BUILD_DOCUMENTATION=ON
+
+      - name: Build Documentation
+        run: cmake --build build --target nfx-datatypes-documentation
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./build/doc/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

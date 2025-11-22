@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/nfx-libs/nfx-datatypes/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://nfx-libs.github.io/nfx-datatypes/
+    about: Browse the full documentation

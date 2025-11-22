@@ -1,0 +1,83 @@
+name: nfx-datatypes - Linux Clang
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE.txt"
+      - ".gitignore"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE.txt"
+      - ".gitignore"
+
+env:
+  BUILD_TYPE: Release
+
+permissions:
+  contents: read
+
+jobs:
+  build-linux-clang:
+    runs-on: ubuntu-latest
+    name: Ubuntu Clang 18
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Cache CMake build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build
+            ~/.cache/ccache
+          key: ${{ runner.os }}-clang18-cmake-${{ hashFiles('**/CMakeLists.txt', 'include/**') }}
+          restore-keys: |
+            ${{ runner.os }}-clang18-cmake-
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build clang-18 libc++-18-dev libc++abi-18-dev ccache
+
+      - name: Set environment variables
+        run: |
+          echo "CC=ccache clang-18" >> $GITHUB_ENV
+          echo "CXX=ccache clang++-18" >> $GITHUB_ENV
+          echo "CCACHE_DIR=$HOME/.cache/ccache" >> $GITHUB_ENV
+          echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
+
+      - name: Setup ccache
+        run: |
+          ccache --zero-stats
+          ccache --show-config
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+                -G "Unix Makefiles" \
+                -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+                -DNFX_DATATYPES_BUILD_STATIC=ON \
+                -DNFX_DATATYPES_BUILD_SHARED=OFF \
+                -DNFX_DATATYPES_BUILD_TESTS=ON \
+                -DNFX_DATATYPES_BUILD_BENCHMARKS=OFF \
+                -DNFX_DATATYPES_BUILD_SAMPLES=OFF \
+                -DNFX_DATATYPES_BUILD_DOCUMENTATION=OFF
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure --parallel
+
+      - name: Show ccache statistics
+        run: ccache --show-stats
