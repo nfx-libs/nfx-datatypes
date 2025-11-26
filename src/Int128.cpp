@@ -842,39 +842,7 @@ namespace nfx::datatypes
 
 	std::ostream& operator<<( std::ostream& os, const Int128& value )
 	{
-		// Simple string conversion for display purposes
-		if ( value == Int128{} )
-		{
-			return os << '0';
-		}
-
-		// Handle the special case of minimum value (-2^127)
-		// This value cannot be represented positively in 128-bit signed integer
-		if ( value == std::numeric_limits<Int128>::min() )
-		{
-			return os << "-" << constants::INT128_MAX_NEGATIVE_STRING;
-		}
-
-		Int128 temp = value.abs();
-		std::string result; // Extract digits by repeated division by 10
-		while ( temp != Int128{} )
-		{
-			Int128 quotient = temp / Int128{ constants::INT128_BASE };
-			Int128 remainder = temp % Int128{ constants::INT128_BASE };
-
-			// remainder should be 0-9, extract as single digit
-			char digit{ static_cast<char>( '0' + remainder.toLow() ) };
-			result = digit + result;
-
-			temp = quotient;
-		}
-
-		if ( value < Int128{} )
-		{
-			result = '-' + result;
-		}
-
-		return os << result;
+		return os << value.toString();
 	}
 
 	std::istream& operator>>( std::istream& is, Int128& value )

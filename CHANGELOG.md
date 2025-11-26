@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- NIL
+- Simplify `Int128::operator<<` by delegating to `toString()`
 
 ### Deprecated
 
