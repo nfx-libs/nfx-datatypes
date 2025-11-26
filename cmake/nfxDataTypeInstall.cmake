@@ -39,19 +39,19 @@ install(
 # Install library targets
 #----------------------------------------------
 
-set(INSTALL_TARGETS)
+set(install_targets)
 
 if(NFX_DATATYPES_BUILD_SHARED)
-	list(APPEND INSTALL_TARGETS ${PROJECT_NAME})
+	list(APPEND install_targets ${PROJECT_NAME})
 endif()
 
 if(NFX_DATATYPES_BUILD_STATIC)
-	list(APPEND INSTALL_TARGETS ${PROJECT_NAME}-static)
+	list(APPEND install_targets ${PROJECT_NAME}-static)
 endif()
 
-if(INSTALL_TARGETS)
+if(install_targets)
 	install(
-		TARGETS ${INSTALL_TARGETS}
+		TARGETS ${install_targets}
 		EXPORT nfx-datatypes-targets
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			COMPONENT Development
@@ -132,13 +132,13 @@ install(
 	RENAME "LICENSE-${PROJECT_NAME}.txt"
 )
 
-file(GLOB LICENSE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/licenses/LICENSE-*")
-foreach(LICENSE_FILE ${LICENSE_FILES})
-	get_filename_component(LICENSE_NAME ${LICENSE_FILE} NAME)
+file(GLOB license_files "${CMAKE_CURRENT_SOURCE_DIR}/licenses/LICENSE-*")
+foreach(license_file ${license_files})
+	get_filename_component(license_name ${license_file} NAME)
 	install(
-		FILES ${LICENSE_FILE}
+		FILES ${license_file}
 		DESTINATION "${CMAKE_INSTALL_DOCDIR}/licenses"
-		RENAME "${LICENSE_NAME}.txt"
+		RENAME "${license_name}.txt"
 	)
 endforeach()
 
@@ -173,4 +173,4 @@ if(NFX_DATATYPES_BUILD_DOCUMENTATION)
 	endif()
 endif()
 
-message(STATUS "Installation configured for targets: ${INSTALL_TARGETS}")
+message(STATUS "Installation configured for targets: ${install_targets}")

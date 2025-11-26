@@ -26,8 +26,6 @@ set(NFX_DATATYPES_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 set_and_check(NFX_DATATYPES_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 set_and_check(NFX_DATATYPES_LIB_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
 
-# Our library dependencies (none - self-contained library)
-
 # Include the targets file
 include("${CMAKE_CURRENT_LIST_DIR}/nfx-datatypes-targets.cmake")
 

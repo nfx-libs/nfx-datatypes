@@ -57,7 +57,7 @@ nfx-datatypes is a modern C++20 library providing numeric types for applications
 ### 🌍 Cross-Platform Support
 
 - **Platforms**: Linux, Windows
-- **Architecture**: x86-64 (x86 SIMD features: SSE4.2, AVX, AVX2)
+- **Architecture**: x86-64
 - **Compilers**: GCC 14+, Clang 18+, MSVC 2022+
 - Thread-safe operations
 - Consistent behavior across platforms
@@ -176,7 +176,7 @@ The complete API documentation is available online at:
 cmake .. -DCMAKE_BUILD_TYPE=Release -DNFX_DATATYPES_BUILD_DOCUMENTATION=ON
 
 # Build the documentation
-cmake --build . --target documentation
+cmake --build . --target nfx-datatypes-documentation
 ```
 
 #### Requirements
@@ -469,4 +469,4 @@ All dependencies are automatically fetched via CMake FetchContent when building 
 
 ---
 
-_Updated on November 22, 2025_
+_Updated on November 24, 2025_

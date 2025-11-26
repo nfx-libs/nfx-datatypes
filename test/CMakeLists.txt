@@ -35,9 +35,9 @@ endif()
 # Tests source files
 #----------------------------------------------
 
-set(TEST_SOURCES)
+set(test_sources)
 
-list(APPEND TEST_SOURCES
+list(APPEND test_sources
 	TESTS_Decimal.cpp
 	TESTS_Int128.cpp
 )
@@ -46,7 +46,7 @@ list(APPEND TEST_SOURCES
 # Configure test executables
 #----------------------------------------------
 
-foreach(test_source ${TEST_SOURCES})
+foreach(test_source ${test_sources})
 	get_filename_component(test_target_name ${test_source} NAME_WE)
 
 	if(NOT TARGET ${test_target_name})
@@ -59,15 +59,6 @@ foreach(test_source ${TEST_SOURCES})
 		target_link_libraries(${test_target_name} PRIVATE
 			nfx-datatypes::static
 			GTest::gtest_main
-		)
-
-		#----------------------------------------------
-		# Enable specific CPU features
-		#----------------------------------------------
-
-		target_compile_options(${test_target_name} PRIVATE
-			$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
-			$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-msse4.2>
 		)
 
 		#----------------------------------------------

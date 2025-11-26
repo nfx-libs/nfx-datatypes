@@ -15,9 +15,9 @@ endif()
 # Benchmarks source files
 #----------------------------------------------
 
-set(BENCHMARK_SOURCES)
+set(benchmark_sources)
 
-list(APPEND BENCHMARK_SOURCES
+list(APPEND benchmark_sources
 	BM_Decimal.cpp
 	BM_Int128.cpp
 )
@@ -26,7 +26,7 @@ list(APPEND BENCHMARK_SOURCES
 # Configure benchmark executables
 #----------------------------------------------
 
-foreach(benchmark_source ${BENCHMARK_SOURCES})
+foreach(benchmark_source ${benchmark_sources})
 	get_filename_component(benchmark_target_name ${benchmark_source} NAME_WE)
 	if(NOT TARGET ${benchmark_target_name})
 		add_executable(${benchmark_target_name} ${benchmark_source})
@@ -38,15 +38,6 @@ foreach(benchmark_source ${BENCHMARK_SOURCES})
 		target_link_libraries(${benchmark_target_name} PRIVATE
 			nfx-datatypes::static
 			benchmark::benchmark
-		)
-
-		#----------------------------------------------
-		# Enable specific CPU features
-		#----------------------------------------------
-
-		target_compile_options(${benchmark_target_name} PRIVATE
-			$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
-			$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-msse4.2>
 		)
 
 		#----------------------------------------------

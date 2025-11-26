@@ -21,9 +21,9 @@ endif()
 
 # --- Detect processor count for parallel packaging ---
 include(ProcessorCount)
-ProcessorCount(N)
-if(NOT N EQUAL 0)
-	set(CPACK_THREADS ${N})
+ProcessorCount(processor_count)
+if(NOT processor_count EQUAL 0)
+	set(CPACK_THREADS ${processor_count})
 else()
 	set(CPACK_THREADS 1)
 endif()
@@ -90,6 +90,12 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY  "nfx-datatypes")
 # Platform-specific generators
 #----------------------------------------------
 
+# --- Find packaging tools ---
+if(UNIX AND NOT APPLE)
+	find_program(DPKG_CMD dpkg)
+	find_program(RPM_CMD rpm)
+endif()
+
 # --- Generators ---
 if(NOT DEFINED CPACK_GENERATOR)
 	set(CPACK_GENERATOR "")
@@ -105,7 +111,6 @@ if(NOT DEFINED CPACK_GENERATOR)
 	
 	# --- DEB packages ---
 	if(NFX_DATATYPES_PACKAGE_DEB AND UNIX AND NOT APPLE)
-		find_program(DPKG_CMD dpkg)
 		if(DPKG_CMD)
 			set(CPACK_GENERATOR "${CPACK_GENERATOR};DEB")
 		else()
@@ -115,7 +120,6 @@ if(NOT DEFINED CPACK_GENERATOR)
 	
 	# --- RPM packages ---
 	if(NFX_DATATYPES_PACKAGE_RPM AND UNIX AND NOT APPLE)
-		find_program(RPM_CMD rpm)
 		if(RPM_CMD)
 			set(CPACK_GENERATOR "${CPACK_GENERATOR};RPM")
 		else()
@@ -126,25 +130,15 @@ if(NOT DEFINED CPACK_GENERATOR)
 	# --- WiX packages ---
 	if(NFX_DATATYPES_PACKAGE_WIX AND WIN32)
 		if(NOT WIX_CANDLE OR NOT WIX_LIGHT)
-			set(WIX_SEARCH_PATHS
-				"C:/Program Files (x86)/WiX Toolset v3.14/bin"
-				"C:/Program Files (x86)/WiX Toolset v3.11/bin"
-				"C:/Program Files (x86)/WiX Toolset v3.10/bin"
-				"$ENV{WIX}bin"
-			)
-			
-			find_program(WIX_CANDLE NAMES candle.exe candle PATHS ${WIX_SEARCH_PATHS} NO_DEFAULT_PATH)
-			find_program(WIX_LIGHT NAMES light.exe light PATHS ${WIX_SEARCH_PATHS} NO_DEFAULT_PATH)
+			find_program(WIX_CANDLE NAMES candle.exe candle HINTS "$ENV{WIX}/bin")
+			find_program(WIX_LIGHT NAMES light.exe light HINTS "$ENV{WIX}/bin")
 		endif()
 		
 		if(WIX_CANDLE AND WIX_LIGHT)
 			set(CPACK_GENERATOR "${CPACK_GENERATOR};WIX")
 			message(STATUS "WiX found: ${WIX_CANDLE} - Windows MSI installer generation enabled")
 		else()
-			message(STATUS "WiX not found - install WiX Toolset v3.x for MSI installer support")
-			if(DEFINED WIX_SEARCH_PATHS)
-				message(STATUS "  Searched paths: ${WIX_SEARCH_PATHS}")
-			endif()
+			message(STATUS "WiX not found - install WiX Toolset and ensure WIX environment variable is set")
 		endif()
 	endif()
 	
@@ -162,13 +156,12 @@ message(STATUS "  Output dir: ${CPACK_PACKAGE_DIRECTORY}")
 
 if("DEB" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
 	if(NOT DEFINED CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
-		find_program(DPKG_CMD dpkg)
 		if(DPKG_CMD)
 			execute_process(COMMAND ${DPKG_CMD} --print-architecture
-				OUTPUT_VARIABLE DETECTED_DEB_ARCH
+				OUTPUT_VARIABLE detected_deb_arch
 				OUTPUT_STRIP_TRAILING_WHITESPACE
 				ERROR_QUIET)
-			set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${DETECTED_DEB_ARCH}")
+			set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${detected_deb_arch}")
 		endif()
 	endif()
 	
@@ -177,11 +170,13 @@ endif()
 
 if("RPM" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
 	if(NOT DEFINED CPACK_RPM_PACKAGE_ARCHITECTURE)
-		execute_process(COMMAND uname -m
-			OUTPUT_VARIABLE DETECTED_RPM_ARCH
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-			ERROR_QUIET)
-		set(CPACK_RPM_PACKAGE_ARCHITECTURE "${DETECTED_RPM_ARCH}")
+		if(RPM_CMD)
+			execute_process(COMMAND uname -m
+				OUTPUT_VARIABLE detected_rpm_arch
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+				ERROR_QUIET)
+			set(CPACK_RPM_PACKAGE_ARCHITECTURE "${detected_rpm_arch}")
+		endif()
 	endif()
 	
 	message(STATUS "RPM package architecture: ${CPACK_RPM_PACKAGE_ARCHITECTURE}")
@@ -194,7 +189,7 @@ endif()
 # --- DEB package settings ---
 if("DEB" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
 	set(CPACK_DEBIAN_PACKAGE_NAME          ${CPACK_PACKAGE_NAME})
-	set(CPACK_DEBIAN_FILE_NAME             DEB-DEFAULT)
+	set(CPACK_DEBIAN_FILE_NAME             "DEB-DEFAULT")
 	set(CPACK_DEBIAN_PACKAGE_VERSION       ${PROJECT_VERSION})
 	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE  ${CPACK_DEBIAN_PACKAGE_ARCHITECTURE})
 	set(CPACK_DEBIAN_PACKAGE_MAINTAINER    ${CPACK_PACKAGE_VENDOR})
@@ -205,9 +200,9 @@ if("DEB" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
 	set(CPACK_DEBIAN_PACKAGE_HOMEPAGE      ${CPACK_PACKAGE_HOMEPAGE_URL})
 	
 	# --- Core runtime dependencies  ---
-	set(DEB_DEPENDS "libc6, libstdc++6, libgcc-s1")
+	set(deb_depends "libc6, libstdc++6, libgcc-s1")
 	
-	set(CPACK_DEBIAN_PACKAGE_DEPENDS "${DEB_DEPENDS}")
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "${deb_depends}")
 	message(STATUS "DEB dependencies: ${CPACK_DEBIAN_PACKAGE_DEPENDS}")
 endif()
 
@@ -227,9 +222,9 @@ if("RPM" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
 	set(CPACK_RPM_PACKAGE_URL           ${CPACK_PACKAGE_HOMEPAGE_URL})
 
 	# --- Core runtime dependencies ---
-	set(RPM_REQUIRES "glibc, libstdc++")
+	set(rpm_requires "glibc, libstdc++")
 	
-	set(CPACK_RPM_PACKAGE_REQUIRES "${RPM_REQUIRES}")
+	set(CPACK_RPM_PACKAGE_REQUIRES "${rpm_requires}")
 	message(STATUS "RPM dependencies: ${CPACK_RPM_PACKAGE_REQUIRES}")
 endif()
 

@@ -11,7 +11,7 @@ if(NFX_DATATYPES_BUILD_SHARED)
 	add_library(${PROJECT_NAME} SHARED)
 	target_sources(${PROJECT_NAME}
 		PRIVATE
-			${PRIVATE_SOURCES}
+			${private_sources}
 	)
 
 	set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -27,7 +27,7 @@ if(NFX_DATATYPES_BUILD_STATIC)
 	add_library(${PROJECT_NAME}-static STATIC)
 	target_sources(${PROJECT_NAME}-static
 		PRIVATE
-			${PRIVATE_SOURCES}
+			${private_sources}
 	)
 
 	set_target_properties(${PROJECT_NAME}-static PROPERTIES
