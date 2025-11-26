@@ -21,13 +21,13 @@ permissions:
   contents: read
 
 jobs:
-  build-windows:
+  build-windows-msvc:
     runs-on: windows-2022
     name: Windows MSVC 2022
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -55,4 +55,4 @@ jobs:
 
       - name: Test
         working-directory: build
-        run: ctest --output-on-failure --parallel
+        run: ctest -C Release --output-on-failure --parallel

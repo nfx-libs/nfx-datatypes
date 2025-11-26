@@ -12,6 +12,7 @@ on:
       - ".github/workflows/documentation.yml"
       - "**/CMakeLists.txt"
       - "**/*.cmake"
+      - "**/*.cmake.in"
 
 permissions:
   contents: read
@@ -27,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Cache Doxygen
         id: cache-doxygen
