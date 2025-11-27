@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Simplify `Int128::operator<<` by delegating to `toString()`
+- NIL
 
 ### Deprecated
 
@@ -30,6 +30,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - NIL
+
+## [0.1.1] - 2025-11-27
+
+### Changed
+
+- Simplify `Int128::operator<<` by delegating to `toString()`
+- Consolidated packaging tool detection in CMake configuration
+
+### Fixed
+
+- Removed incorrect runtime dependencies from DEB/RPM packages
 
 ## [0.1.0] - 2025-11-22 - Initial Release
 

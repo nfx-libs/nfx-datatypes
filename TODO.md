@@ -16,5 +16,7 @@ Project roadmap and task tracking for the nfx-datatypes library.
 
 ### Done ✓
 
+#### v0.1.1 (2025-11-27)
+
 - [x] **Refactor Int128 Stream Operator**
   - [x] Deduplicated `operator<<` to delegate to `toString()` for maintainability
