@@ -50,10 +50,27 @@ else()
 endif()
 
 #----------------------------------------------
+# Project metadata
+#----------------------------------------------
+
+set(NFX_DATATYPES_LICENSE "MIT")
+set(NFX_DATATYPES_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+
+#----------------------------------------------
 # Install prefix configuration
 #----------------------------------------------
 
 include(GNUInstallDirs)
+
+# Set default installation path to nfx
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	if(WIN32)
+		set(CMAKE_INSTALL_PREFIX "C:/Program Files/nfx" CACHE PATH "Installation directory" FORCE)
+	else()
+		set(CMAKE_INSTALL_PREFIX "/usr/local/nfx" CACHE PATH "Installation directory" FORCE)
+	endif()
+	message(STATUS "Setting install prefix to '${CMAKE_INSTALL_PREFIX}'")
+endif()
 
 #----------------------------------------------
 # Directory configuration

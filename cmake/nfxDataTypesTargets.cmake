@@ -73,7 +73,7 @@ if(NFX_DATATYPES_BUILD_SHARED)
 		)
 
 		configure_file(
-			${CMAKE_CURRENT_SOURCE_DIR}/cmake/nfxDataTypeVersion.rc.in
+			${CMAKE_CURRENT_SOURCE_DIR}/cmake/nfxDataTypesVersion.rc.in
 			${CMAKE_BINARY_DIR}/nfxDataTypes.rc
 			@ONLY
 		)

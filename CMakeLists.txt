@@ -16,20 +16,6 @@ project(nfx-datatypes
 )
 
 #----------------------------------------------
-# Installation prefix configuration
-#----------------------------------------------
-
-# Set default installation path to nfx
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	if(WIN32)
-		set(CMAKE_INSTALL_PREFIX "C:/Program Files/nfx" CACHE PATH "Installation directory" FORCE)
-	else()
-		set(CMAKE_INSTALL_PREFIX "/usr/local/nfx" CACHE PATH "Installation directory" FORCE)
-	endif()
-	message(STATUS "Setting install prefix to '${CMAKE_INSTALL_PREFIX}'")
-endif()
-
-#----------------------------------------------
 # Version configuration
 #----------------------------------------------
 
@@ -37,13 +23,6 @@ set(NFX_DATATYPES_VERSION_MAJOR ${PROJECT_VERSION_MAJOR} CACHE INTERNAL "nfx-dat
 set(NFX_DATATYPES_VERSION_MINOR ${PROJECT_VERSION_MINOR} CACHE INTERNAL "nfx-datatypes minor version")
 set(NFX_DATATYPES_VERSION_PATCH ${PROJECT_VERSION_PATCH} CACHE INTERNAL "nfx-datatypes patch version")
 set(NFX_DATATYPES_VERSION       ${PROJECT_VERSION}       CACHE INTERNAL "nfx-datatypes version")
-
-#----------------------------------------------
-# Project metadata
-#----------------------------------------------
-
-set(NFX_DATATYPES_LICENSE "MIT")
-set(NFX_DATATYPES_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 
 #----------------------------------------------
 # Testing setup
@@ -86,16 +65,16 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 #----------------------------------------------
 
 include(nfxDataTypesBuildConfig)
-include(nfxDataTypeDependencies)
-include(nfxDataTypeSources)
-include(nfxDataTypeTargets)
+include(nfxDataTypesDependencies)
+include(nfxDataTypesSources)
+include(nfxDataTypesTargets)
 
 #----------------------------------------------
 # Installation and packaging
 #----------------------------------------------
 
-include(nfxDataTypeInstall)
-include(nfxDataTypePackaging)
+include(nfxDataTypesInstall)
+include(nfxDataTypesPackaging)
 
 #----------------------------------------------
 # Targets
