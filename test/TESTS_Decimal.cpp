@@ -136,6 +136,60 @@ namespace nfx::datatypes::test
 		// The result should be close to 0.1 but may have precision artifacts
 	}
 
+	TEST( DecimalConstruction, FloatIEEE754ArtifactPrevention )
+	{
+		// Test that float constructor avoids IEEE 754 binary representation artifacts
+		// These values have problematic binary representations that should be cleaned
+
+		// 273.15f - temperature conversion constant (Celsius to Kelvin)
+		// Binary representation causes "273.149994..." without fix
+		datatypes::Decimal d1{ 273.15f };
+		std::string str1 = d1.toString();
+		EXPECT_EQ( str1, "273.15" );
+
+		// 380.4 - another value with binary artifacts
+		datatypes::Decimal d2{ 380.4f };
+		std::string str2 = d2.toString();
+		// Should be close to 380.4, not "380.399..." (exact match depends on float precision)
+		EXPECT_TRUE( str2.substr( 0, 5 ) == "380.4" );
+
+		// Test integer values stored as float - should be exact
+		datatypes::Decimal d3{ 42.0f };
+		EXPECT_EQ( d3.toString(), "42" );
+
+		datatypes::Decimal d4{ 100.0f };
+		EXPECT_EQ( d4.toString(), "100" );
+
+		// Test large float values that might trigger scientific notation in to_chars
+		datatypes::Decimal d5{ 100000000.0f }; // 1e8
+		std::string str5 = d5.toString();
+		EXPECT_TRUE( str5.find( 'e' ) == std::string::npos ); // No scientific notation
+		EXPECT_TRUE( str5.find( 'E' ) == std::string::npos );
+		EXPECT_TRUE( d5 > 99999999.0 && d5 < 100000001.0 );
+
+		// Test small floats that are still representable with precision 4-6
+		datatypes::Decimal d6{ 0.001f };
+		EXPECT_TRUE( d6 > 0.0 );
+		EXPECT_TRUE( d6 < 0.01 );
+
+		// Test negative values with binary artifacts
+		datatypes::Decimal d7{ -273.15f };
+		std::string str7 = d7.toString();
+		EXPECT_EQ( str7, "-273.15" );
+
+		// Test common financial values
+		datatypes::Decimal d8{ 99.99f };
+		std::string str8 = d8.toString();
+		EXPECT_TRUE( str8.substr( 0, 5 ) == "99.99" );
+
+		// Test zero and negative zero
+		datatypes::Decimal d9{ 0.0f };
+		EXPECT_EQ( d9.toString(), "0" );
+
+		datatypes::Decimal d10{ -0.0f };
+		EXPECT_EQ( d10.toString(), "0" );
+	}
+
 	TEST( DecimalConstruction, DoubleConstruction )
 	{
 		// Simple double
@@ -157,6 +211,63 @@ namespace nfx::datatypes::test
 		datatypes::Decimal d4{ 0.001 };
 		EXPECT_FALSE( d4 == 0 );
 		EXPECT_FALSE( d4 < 0 );
+	}
+
+	TEST( DecimalConstruction, DoubleIEEE754ArtifactPrevention )
+	{
+		// Test that double constructor avoids IEEE 754 binary representation artifacts
+
+		// 380.4 - the original bug report value
+		// Binary representation causes "380.399999999999977" without fix
+		datatypes::Decimal d1{ 380.4 };
+		std::string str1 = d1.toString();
+		EXPECT_EQ( str1, "380.4" );
+
+		// Test integer values stored as double - should be exact
+		datatypes::Decimal d2{ 42.0 };
+		EXPECT_EQ( d2.toString(), "42" );
+
+		datatypes::Decimal d3{ 1000.0 };
+		EXPECT_EQ( d3.toString(), "1000" );
+
+		// Test large double values that might trigger scientific notation
+		datatypes::Decimal d4{ 100000000.0 }; // 1e8
+		std::string str4 = d4.toString();
+		EXPECT_TRUE( str4.find( 'e' ) == std::string::npos ); // No scientific notation
+		EXPECT_TRUE( str4.find( 'E' ) == std::string::npos );
+		EXPECT_EQ( str4, "100000000" );
+
+		datatypes::Decimal d5{ 1e15 }; // Very large value
+		std::string str5 = d5.toString();
+		EXPECT_TRUE( str5.find( 'e' ) == std::string::npos );
+		EXPECT_TRUE( str5.find( 'E' ) == std::string::npos );
+
+		// Test very small doubles
+		datatypes::Decimal d6{ 1e-10 };
+		EXPECT_TRUE( d6 > 0.0 );
+		EXPECT_TRUE( d6 < 0.001 );
+
+		// Test negative values
+		datatypes::Decimal d7{ -380.4 };
+		std::string str7 = d7.toString();
+		EXPECT_EQ( str7, "-380.4" );
+
+		// Test common decimal values
+		datatypes::Decimal d8{ 0.5 };
+		EXPECT_EQ( d8.toString(), "0.5" );
+
+		datatypes::Decimal d9{ 0.25 };
+		EXPECT_EQ( d9.toString(), "0.25" );
+
+		datatypes::Decimal d10{ 0.125 };
+		EXPECT_EQ( d10.toString(), "0.125" );
+
+		// Test zero
+		datatypes::Decimal d11{ 0.0 };
+		EXPECT_EQ( d11.toString(), "0" );
+
+		datatypes::Decimal d12{ -0.0 };
+		EXPECT_EQ( d12.toString(), "0" );
 	}
 
 	TEST( DecimalConstruction, Int128Construction )

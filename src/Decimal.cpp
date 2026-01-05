@@ -28,6 +28,7 @@
  * @details Provides exact decimal arithmetic with portable 128-bit operations
  */
 
+#include <charconv>
 #include <cmath>
 #include <iomanip>
 #include <istream>
@@ -313,6 +314,85 @@ namespace nfx::datatypes
 	// Construction
 	//----------------------------------------------
 
+	Decimal::Decimal( float value ) noexcept
+		: m_layout{ 0, { { 0, 0, 0 } } }
+	{
+		if ( std::isnan( value ) || std::isinf( value ) || value == 0.0f )
+		{
+			return;
+		}
+
+		char buffer[64];
+
+		float absValue = value < 0 ? -value : value;
+		int precision = ( absValue > 0 && absValue < 1e-6f ) ? 10 : 4;
+
+		auto [ptr, ec] = std::to_chars( buffer, buffer + sizeof( buffer ), value,
+			std::chars_format::fixed, precision );
+
+		if ( ec != std::errc{} )
+		{
+			return; // Zero on error
+		}
+
+		// Parse the string directly (inline, avoiding fromString overhead)
+		const char* p = buffer;
+		const char* end = ptr;
+
+		// Handle sign
+		bool negative = false;
+		if ( *p == '-' )
+		{
+			negative = true;
+			++p;
+		}
+		else if ( *p == '+' )
+		{
+			++p;
+		}
+
+		// Parse digits and track decimal point
+		const char* decimalPoint = nullptr;
+		while ( p < end )
+		{
+			if ( *p == '.' )
+			{
+				decimalPoint = p;
+				++p;
+				continue;
+			}
+
+			if ( *p >= '0' && *p <= '9' )
+			{
+				internal::multiplyMantissaBy10AndAdd( m_layout.mantissa.data(),
+					static_cast<std::uint32_t>( *p - '0' ) );
+			}
+			++p;
+		}
+
+		// Calculate scale (digits after decimal point)
+		std::uint8_t scale = 0;
+		if ( decimalPoint )
+		{
+			scale = static_cast<std::uint8_t>( end - decimalPoint - 1 );
+
+			// Remove trailing zeros from the string representation
+			while ( scale > 0 && buffer[end - p - 1] == '0' )
+			{
+				--scale;
+				--end;
+			}
+		}
+
+		m_layout.flags = ( scale << constants::DECIMAL_SCALE_SHIFT );
+		if ( negative )
+		{
+			m_layout.flags |= constants::DECIMAL_SIGN_MASK;
+		}
+
+		internal::normalize( *this );
+	}
+
 	Decimal::Decimal( double value ) noexcept
 		: m_layout{ 0, { { 0, 0, 0 } } }
 	{
@@ -321,52 +401,69 @@ namespace nfx::datatypes
 			return;
 		}
 
-		bool negative = value < 0.0;
-		if ( negative )
+		// Convert double to string using std::to_chars.
+		// Use fixed format to avoid scientific notation which would require
+		// additional parsing logic. This ensures clean decimal representation
+		// while avoiding binary representation artifacts
+		char buffer[64];
+
+		auto [ptr, ec] = std::to_chars( buffer, buffer + sizeof( buffer ), value,
+			std::chars_format::fixed );
+
+		if ( ec != std::errc{} )
 		{
-			value = -value;
+			return; // Zero on error
 		}
 
-		// Decompose double into integer and fractional parts using arithmetic
-		// This avoids expensive std::ostringstream string conversion
+		// Parse the string directly (inline, avoiding fromString overhead)
+		const char* p = buffer;
+		const char* end = ptr;
 
-		// 1. Extract integer part using std::modf (fast)
-		double intPart;
-		double fracPart = std::modf( value, &intPart );
-
-		// 2. Convert integer part directly to mantissa
-		std::uint64_t intValue = static_cast<std::uint64_t>( intPart );
-		m_layout.mantissa[0] = static_cast<std::uint32_t>( intValue );
-		m_layout.mantissa[1] = static_cast<std::uint32_t>( intValue >> 32 );
-
-		// 3. Convert fractional part by multiplying by 10^scale
-		std::uint8_t scale = 0;
-		if ( fracPart > 0.0 )
+		// Handle sign
+		bool negative = false;
+		if ( *p == '-' )
 		{
-			// Determine optimal scale (up to 15 digits precision)
-			while ( fracPart > 0.0 && scale < constants::DOUBLE_DECIMAL_PRECISION )
+			negative = true;
+			++p;
+		}
+		else if ( *p == '+' )
+		{
+			++p;
+		}
+
+		// Parse digits and track decimal point
+		const char* decimalPoint = nullptr;
+		while ( p < end )
+		{
+			if ( *p == '.' )
 			{
-				fracPart *= constants::DECIMAL_BASE;
-				double digit;
-				fracPart = std::modf( fracPart, &digit );
-
-				// Multiply mantissa by 10 and add digit
-				internal::multiplyMantissaBy10AndAdd( m_layout.mantissa.data(), static_cast<std::uint32_t>( digit ) );
-				scale++;
-
-				if ( fracPart < constants::DECIMAL_FRACTIONAL_EPSILON ) // Stop when remaining is negligible
-				{
-					break;
-				}
+				decimalPoint = p;
+				++p;
+				continue;
 			}
+
+			if ( *p >= '0' && *p <= '9' )
+			{
+				internal::multiplyMantissaBy10AndAdd( m_layout.mantissa.data(),
+					static_cast<std::uint32_t>( *p - '0' ) );
+			}
+			++p;
 		}
 
-		// 4. Set scale and sign
+		// Calculate scale (digits after decimal point)
+		std::uint8_t scale = 0;
+		if ( decimalPoint )
+		{
+			scale = static_cast<std::uint8_t>( end - decimalPoint - 1 );
+		}
+
 		m_layout.flags = ( scale << constants::DECIMAL_SCALE_SHIFT );
 		if ( negative )
 		{
 			m_layout.flags |= constants::DECIMAL_SIGN_MASK;
 		}
+
+		internal::normalize( *this );
 	}
 
 	Decimal::Decimal( const Int128& val )

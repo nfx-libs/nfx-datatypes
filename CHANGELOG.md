@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- NIL
+- Fixed IEEE 754 binary representation artifacts in `Decimal(float)` and `Decimal(double)` constructors causing incorrect decimal displays (e.g., 273.15f showing as "273.149994", 380.4 showing as "380.399999999999977")
 
 ### Security
 

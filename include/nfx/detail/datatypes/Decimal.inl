@@ -47,11 +47,6 @@ namespace nfx::datatypes
 	{
 	}
 
-	inline Decimal::Decimal( float value ) noexcept
-		: Decimal( static_cast<double>( value ) )
-	{
-	}
-
 	inline Decimal::Decimal( std::int32_t value ) noexcept
 		: m_layout{ 0, { { 0, 0, 0 } } }
 	{

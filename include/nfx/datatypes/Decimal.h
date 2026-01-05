@@ -220,7 +220,7 @@ namespace nfx::datatypes
 		 * @note For exact precision with fractional values, use string constructor instead.
 		 *       Float precision is inherently limited and may introduce rounding artifacts.
 		 */
-		inline explicit Decimal( float value ) noexcept;
+		explicit Decimal( float value ) noexcept;
 
 		/**
 		 * @brief Construct from double with IEEE 754-2008 input compatibility
