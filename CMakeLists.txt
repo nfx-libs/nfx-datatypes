@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(nfx-datatypes
-    VERSION 0.1.1
+    VERSION 0.2.0
     DESCRIPTION "Cross-platform C++ library with high-precision Int128 and Decimal datatypes"
     HOMEPAGE_URL "https://github.com/nfx-libs/nfx-datatypes"
     LANGUAGES CXX
