@@ -291,6 +291,12 @@ namespace nfx::datatypes::constants
 	/** @brief Maximum power for extended 128-bit power-of-10 table (10^28). */
 	inline constexpr std::uint8_t DECIMAL_EXTENDED_POWER_MAX{ 28U };
 
+	/** @brief Powers of 10 as double for fast toDouble() conversion (10^0 to 10^28). */
+	inline constexpr std::array<double, DECIMAL_MAXIMUM_PLACES + 1> DOUBLE_POWERS_OF_10{
+		{ 1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9,
+			1e10, 1e11, 1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19,
+			1e20, 1e21, 1e22, 1e23, 1e24, 1e25, 1e26, 1e27, 1e28 } };
+
 	/** @brief Powers of 10 lookup table for efficient scaling operations (64-bit range: 10^0 to 10^19). */
 	inline constexpr std::array<std::uint64_t, DECIMAL_POWER_TABLE_SIZE> DECIMAL_POWERS_OF_10{ {
 		1ULL,					 // 10^0

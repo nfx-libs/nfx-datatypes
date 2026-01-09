@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- NIL
+- **Performance**: Added `DOUBLE_POWERS_OF_10` lookup table for `Decimal::toDouble()` conversion.
 
 ### Deprecated
 

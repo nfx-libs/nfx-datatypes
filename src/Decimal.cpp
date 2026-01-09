@@ -1333,17 +1333,7 @@ namespace nfx::datatypes
 		std::uint8_t currentScale = scale();
 		if ( currentScale > 0 )
 		{
-			Int128 divisor = internal::powerOf10( currentScale );
-#if NFX_DATATYPES_HAS_NATIVE_INT128
-			result /= static_cast<double>( divisor.toNative() );
-#else
-			double divisorDouble = static_cast<double>(
-									   divisor.toHigh() ) *
-									   ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) *
-									   ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) +
-								   static_cast<double>( divisor.toLow() );
-			result /= divisorDouble;
-#endif
+			result /= constants::DOUBLE_POWERS_OF_10[currentScale];
 		}
 
 		// Apply sign
