@@ -1329,11 +1329,21 @@ namespace nfx::datatypes
 					 ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) +
 				 static_cast<double>( mantissa.toLow() );
 #endif
-		// Apply scale
+		// Apply scale (using single division to avoid cumulative rounding errors)
 		std::uint8_t currentScale = scale();
-		for ( std::uint8_t i = 0; i < currentScale; ++i )
+		if ( currentScale > 0 )
 		{
-			result /= static_cast<double>( constants::DECIMAL_BASE );
+			Int128 divisor = internal::powerOf10( currentScale );
+#if NFX_DATATYPES_HAS_NATIVE_INT128
+			result /= static_cast<double>( divisor.toNative() );
+#else
+			double divisorDouble = static_cast<double>(
+									   divisor.toHigh() ) *
+									   ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) *
+									   ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) +
+								   static_cast<double>( divisor.toLow() );
+			result /= divisorDouble;
+#endif
 		}
 
 		// Apply sign
