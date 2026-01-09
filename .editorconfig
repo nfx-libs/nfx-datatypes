@@ -2,6 +2,12 @@
 
 # C++ specific settings
 [*.{cpp,hpp,h,cc,cxx,inl}]
-indent_style = tab
+indent_style = space
+indent_size = 4
+end_of_line = lf
+
+# CMake files
+[{CMakeLists.txt,*.cmake}]
+indent_style = space
 indent_size = 4
 end_of_line = lf

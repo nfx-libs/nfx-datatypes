@@ -18,6 +18,7 @@ ALL_BUILD.vcxproj*
 ZERO_CHECK.vcxproj*
 RUN_TESTS.vcxproj*
 TESTS_*.vcxproj*
+.qtcreator
 
 # cpp build directory
 build/

@@ -36,23 +36,23 @@
  */
 #if defined( __SIZEOF_INT128__ ) && !defined( _MSC_VER )
 // GCC and Clang have native __int128 support
-#	define NFX_DATATYPES_HAS_NATIVE_INT128 1
-#	define NFX_DATATYPES_NATIVE_INT128 __int128
+#    define NFX_DATATYPES_HAS_NATIVE_INT128 1
+#    define NFX_DATATYPES_NATIVE_INT128 __int128
 #else
 // MSVC and other compilers without native 128-bit support
-#	define NFX_DATATYPES_HAS_NATIVE_INT128 0
+#    define NFX_DATATYPES_HAS_NATIVE_INT128 0
 // For manual 128-bit implementation, we'll use our custom Int128 struct
 #endif
 
 /** @brief Conditional compilation helper for 128-bit specific code paths */
 #if NFX_DATATYPES_HAS_NATIVE_INT128
 /** @brief Includes code only when native 128-bit integer support is available */
-#	define NFX_DATATYPES_IF_INT128( code ) code
+#    define NFX_DATATYPES_IF_INT128( code ) code
 /** @brief Includes code only when native 128-bit integer support is NOT available */
-#	define NFX_DATATYPES_IF_NO_INT128( code )
+#    define NFX_DATATYPES_IF_NO_INT128( code )
 #else
 /** @brief Includes code only when native 128-bit integer support is available */
-#	define NFX_DATATYPES_IF_INT128( code )
+#    define NFX_DATATYPES_IF_INT128( code )
 /** @brief Includes code only when native 128-bit integer support is NOT available */
-#	define NFX_DATATYPES_IF_NO_INT128( code ) code
+#    define NFX_DATATYPES_IF_NO_INT128( code ) code
 #endif

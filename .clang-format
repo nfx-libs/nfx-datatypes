@@ -35,7 +35,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
 TabWidth: 4
-UseTab: true
+UseTab: false
 KeepEmptyLines:
   AtStartOfBlock: false
   AtStartOfFile: false

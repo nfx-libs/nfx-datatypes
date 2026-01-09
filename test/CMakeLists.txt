@@ -7,8 +7,7 @@
 #----------------------------------------------
 
 if(NOT NFX_DATATYPES_BUILD_TESTS)
-	message(STATUS "Tests disabled, skipping...")
-	return()
+    return()
 endif()
 
 #----------------------------------------------
@@ -24,11 +23,11 @@ include(GoogleTest)
 include(ProcessorCount)
 ProcessorCount(N)
 if(NOT N EQUAL 0)
-	set(CTEST_PARALLEL_LEVEL ${N})
-	message(STATUS "Setting parallel test level to ${N} cores")
+    set(CTEST_PARALLEL_LEVEL ${N})
+    message(STATUS "Setting parallel test level to ${N} cores")
 else()
-	set(CTEST_PARALLEL_LEVEL 4)
-	message(STATUS "Could not detect CPU count, setting parallel test level to 4")
+    set(CTEST_PARALLEL_LEVEL 4)
+    message(STATUS "Could not detect CPU count, setting parallel test level to 4")
 endif()
 
 #----------------------------------------------
@@ -38,8 +37,8 @@ endif()
 set(test_sources)
 
 list(APPEND test_sources
-	TESTS_Decimal.cpp
-	TESTS_Int128.cpp
+    Tests_Decimal.cpp
+    Tests_Int128.cpp
 )
 
 #----------------------------------------------
@@ -47,46 +46,48 @@ list(APPEND test_sources
 #----------------------------------------------
 
 foreach(test_source ${test_sources})
-	get_filename_component(test_target_name ${test_source} NAME_WE)
+    get_filename_component(test_target_name ${test_source} NAME_WE)
 
-	if(NOT TARGET ${test_target_name})
-		add_executable(${test_target_name} ${test_source})
+    if(NOT TARGET ${test_target_name})
+        add_executable(${test_target_name} ${test_source})
 
-		#----------------------------------------------
-		# Target linking
-		#----------------------------------------------
+        #----------------------------------------------
+        # Target linking
+        #----------------------------------------------
 
-		target_link_libraries(${test_target_name} PRIVATE
-			nfx-datatypes::static
-			GTest::gtest_main
-		)
+        target_link_libraries(${test_target_name}
+            PRIVATE
+                nfx-datatypes::static
+                GTest::gtest_main
+        )
 
-		#----------------------------------------------
-		# Properties
-		#----------------------------------------------
+        #----------------------------------------------
+        # Properties
+        #----------------------------------------------
 
-		set_target_properties(${test_target_name} PROPERTIES
-			CXX_STANDARD 20
-			CXX_STANDARD_REQUIRED ON
-			CXX_EXTENSIONS OFF
-			POSITION_INDEPENDENT_CODE ON
-			DEBUG_POSTFIX "-d"
-			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests"
-			RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests"
-			RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests"
-		)
+        set_target_properties(${test_target_name}
+            PROPERTIES
+                CXX_STANDARD 20
+                CXX_STANDARD_REQUIRED ON
+                CXX_EXTENSIONS OFF
+                POSITION_INDEPENDENT_CODE ON
+                DEBUG_POSTFIX "-d"
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        )
 
-		#----------------------------------------------
-		# Test discovery and registration
-		#----------------------------------------------
+        #----------------------------------------------
+        # Test discovery and registration
+        #----------------------------------------------
 
-		gtest_discover_tests(${test_target_name}
-			WORKING_DIRECTORY "$<TARGET_FILE_DIR:${test_target_name}>"
-			DISCOVERY_MODE POST_BUILD
-			PROPERTIES
-				TIMEOUT 120
-				RUN_SERIAL OFF
-		)
-	endif()
+        gtest_discover_tests(${test_target_name}
+            WORKING_DIRECTORY "$<TARGET_FILE_DIR:${test_target_name}>"
+            DISCOVERY_MODE POST_BUILD
+            PROPERTIES
+                TIMEOUT 120
+                RUN_SERIAL OFF
+        )
+    endif()
 endforeach()
 
