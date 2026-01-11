@@ -4,7 +4,7 @@
 
 ### Added
 
-- NIL
+- Added `Decimal(const char*)` and  `Int128(const char*)` constructors for C-string initialization
 
 ### Changed
 

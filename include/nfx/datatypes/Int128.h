@@ -201,6 +201,13 @@ namespace nfx::datatypes
         inline explicit Int128( std::string_view str );
 
         /**
+         * @brief Construct from C-string (exact parsing)
+         * @param scStr Null-terminated C-string representation (e.g., "123", "-456789")
+         * @throws std::invalid_argument if string is not a valid integer
+         */
+        inline explicit Int128( const char* scStr );
+
+        /**
          * @brief Construct from single-precision floating-point value
          * @param val Float value to convert
          * @details Follows C++ standard truncation behavior (like static_cast<int>(float)):

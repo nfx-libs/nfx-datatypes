@@ -2444,6 +2444,39 @@ namespace nfx::datatypes::test
         EXPECT_FALSE( d5 == 0 );
     }
 
+    TEST( DecimalStringParsing, CStringConstruction )
+    {
+        // Valid C-strings - tests const char* constructor
+        const char* str1 = "123.456";
+        datatypes::Decimal d1{ str1 };
+        EXPECT_EQ( d1.toString(), "123.456" );
+
+        const char* str2 = "-789.123";
+        datatypes::Decimal d2{ str2 };
+        EXPECT_TRUE( d2 < 0 );
+
+        const char* str3 = "0";
+        datatypes::Decimal d3{ str3 };
+        EXPECT_TRUE( d3 == 0 );
+
+        const char* str4 = "0.0001";
+        datatypes::Decimal d4{ str4 };
+        EXPECT_FALSE( d4 == 0 );
+
+        // Test with many Decimal places
+        const char* str5 = "123.1234567890123456789";
+        datatypes::Decimal d5{ str5 };
+        EXPECT_FALSE( d5 == 0 );
+
+        // Test invalid C-string throws exception
+        const char* invalid = "invalid";
+        EXPECT_THROW( datatypes::Decimal{ invalid }, std::invalid_argument );
+
+        // Test empty string throws exception
+        const char* empty = "";
+        EXPECT_THROW( datatypes::Decimal{ empty }, std::invalid_argument );
+    }
+
     TEST( DecimalStringParsing, FromStringMethod )
     {
         datatypes::Decimal result;

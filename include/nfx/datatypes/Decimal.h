@@ -236,25 +236,25 @@ namespace nfx::datatypes
          * @brief Construct from 32-bit integer
          * @param value Integer value to convert
          */
-        explicit inline Decimal( std::int32_t value ) noexcept;
+        inline explicit Decimal( std::int32_t value ) noexcept;
 
         /**
          * @brief Construct from 64-bit integer
          * @param value Integer value to convert
          */
-        explicit inline Decimal( std::int64_t value ) noexcept;
+        inline explicit Decimal( std::int64_t value ) noexcept;
 
         /**
          * @brief Construct from 32-bit unsigned integer
          * @param value Unsigned integer value to convert
          */
-        explicit inline Decimal( std::uint32_t value ) noexcept;
+        inline explicit Decimal( std::uint32_t value ) noexcept;
 
         /**
          * @brief Construct from 64-bit unsigned integer
          * @param value Unsigned integer value to convert
          */
-        explicit inline Decimal( std::uint64_t value ) noexcept;
+        inline explicit Decimal( std::uint64_t value ) noexcept;
 
         /**
          * @brief Construct from string (exact parsing)
@@ -262,7 +262,15 @@ namespace nfx::datatypes
          * @throws std::invalid_argument if string is not a valid decimal
          * @see fromString() for non-throwing parsing
          */
-        explicit inline Decimal( std::string_view str );
+        inline explicit Decimal( std::string_view str );
+
+        /**
+         * @brief Construct from C-string (exact parsing)
+         * @param scStr Null-terminated C-string representation (e.g., "123.456")
+         * @throws std::invalid_argument if string is not a valid decimal
+         * @see fromString() for non-throwing parsing
+         */
+        inline explicit Decimal( const char* scStr );
 
         /**
          * @brief Construct from 128-bit integer with overflow detection

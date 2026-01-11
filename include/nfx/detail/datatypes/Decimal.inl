@@ -94,6 +94,11 @@ namespace nfx::datatypes
         }
     }
 
+    inline Decimal::Decimal( const char* scStr )
+        : Decimal{ std::string_view{ scStr } }
+    {
+    }
+
     //----------------------------------------------
     // Comparison with built-in floating point types
     //----------------------------------------------

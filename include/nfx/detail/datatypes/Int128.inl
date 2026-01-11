@@ -84,6 +84,11 @@ namespace nfx::datatypes
         }
     }
 
+    inline Int128::Int128( const char* scStr )
+        : Int128{ std::string_view{ scStr } }
+    {
+    }
+
     inline constexpr Int128::Int128( std::uint64_t low, std::uint64_t high ) noexcept
         : m_value{ static_cast<NFX_DATATYPES_NATIVE_INT128>( high ) << constants::BITS_PER_UINT64 | low }
     {
@@ -396,6 +401,11 @@ namespace nfx::datatypes
         {
             throw std::invalid_argument{ "Invalid Int128 string format" };
         }
+    }
+
+    inline Int128::Int128( const char* scStr )
+        : Int128{ std::string_view{ scStr } }
+    {
     }
 
     inline constexpr Int128::Int128( std::uint64_t low, std::uint64_t high ) noexcept

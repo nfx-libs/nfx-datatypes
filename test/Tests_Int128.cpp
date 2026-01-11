@@ -2162,6 +2162,51 @@ namespace nfx::datatypes::test
         EXPECT_FALSE( datatypes::Int128::fromString( "1e10", result ) );
     }
 
+    TEST( Int128StringParsing, CStringConstruction )
+    {
+        // Valid C-strings - tests const char* constructor
+        const char* str1 = "12345";
+        datatypes::Int128 i1{ str1 };
+        EXPECT_EQ( 12345ULL, i1.toLow() );
+        EXPECT_FALSE( i1 < 0 );
+
+        const char* str2 = "-9876543210";
+        datatypes::Int128 i2{ str2 };
+        EXPECT_TRUE( i2 < 0 );
+
+        const char* str3 = "0";
+        datatypes::Int128 i3{ str3 };
+        EXPECT_TRUE( i3 == 0 );
+
+        const char* str4 = "123456789012345678901234567890";
+        datatypes::Int128 i4{ str4 };
+        EXPECT_FALSE( i4 == 0 );
+        EXPECT_FALSE( i4 < 0 );
+
+        const char* str5 = "-123456789012345678901234567890";
+        datatypes::Int128 i5{ str5 };
+        EXPECT_TRUE( i5 < 0 );
+
+        const char* str6 = "+42";
+        datatypes::Int128 i6{ str6 };
+        EXPECT_EQ( 42ULL, i6.toLow() );
+        EXPECT_FALSE( i6 < 0 );
+
+        // Test invalid C-string throws exception
+        const char* invalid1 = "abc";
+        EXPECT_THROW( datatypes::Int128{ invalid1 }, std::invalid_argument );
+
+        const char* invalid2 = "123abc";
+        EXPECT_THROW( datatypes::Int128{ invalid2 }, std::invalid_argument );
+
+        const char* invalid3 = "12.34";
+        EXPECT_THROW( datatypes::Int128{ invalid3 }, std::invalid_argument );
+
+        // Test empty string throws exception
+        const char* empty = "";
+        EXPECT_THROW( datatypes::Int128{ empty }, std::invalid_argument );
+    }
+
     TEST( Int128StringParsing, ParseMethod )
     {
         // Valid positive parsing
