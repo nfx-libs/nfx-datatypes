@@ -132,11 +132,32 @@ namespace nfx::datatypes
 
         if( decimal.scale() > 0 )
         {
-            Int128 divisor{ 1 };
-            for( std::uint8_t i = 0; i < decimal.scale(); ++i )
+            // Optimized: Use power-of-10 lookup tables instead of iterative multiplication
+            Int128 divisor;
+            std::uint8_t scale = decimal.scale();
+
+            if( scale < constants::DECIMAL_POWER_TABLE_SIZE )
             {
-                divisor = divisor * Int128{ constants::INT128_BASE };
+                // Use 64-bit lookup table for powers 0-19
+                divisor = Int128{ constants::DECIMAL_POWERS_OF_10[scale] };
             }
+            else if( scale >= constants::DECIMAL_EXTENDED_POWER_MIN && scale <= constants::DECIMAL_EXTENDED_POWER_MAX )
+            {
+                // Use pre-computed 128-bit values for powers 20-28
+                const auto& extended =
+                    constants::DECIMAL_EXTENDED_POWERS_OF_10[scale - constants::DECIMAL_EXTENDED_POWER_MIN];
+                divisor = Int128{ extended.first, extended.second };
+            }
+            else
+            {
+                // Fallback (shouldn't happen for valid Decimal scale 0-28)
+                divisor = Int128{ 1 };
+                for( std::uint8_t i = 0; i < scale; ++i )
+                {
+                    divisor = divisor * Int128{ constants::INT128_BASE };
+                }
+            }
+
             integerPart = integerPart / divisor; // Integer division truncates
         }
 
@@ -532,25 +553,86 @@ namespace nfx::datatypes
         {
             return std::string{ "-" } + std::string{ constants::INT128_MAX_NEGATIVE_STRING };
         }
-        std::string result;
-        result.reserve( constants::INT128_MAX_DIGIT_COUNT + 1 ); // Reserve space for efficiency (39 digits + sign)
 
-        Int128 temp = abs(); // Extract digits by repeated division by 10
-        while( temp != Int128{} )
+        // Optimized digit extraction using char buffer (avoids N allocations)
+        std::array<char, constants::INT128_MAX_DIGIT_COUNT> digits;
+        size_t digitCount{ 0 };
+
+        Int128 temp = abs();
+
+#if NFX_DATATYPES_HAS_NATIVE_INT128
+        // Fast path for values that fit in 64-bit
+        if( temp.toNative() <= UINT64_MAX )
         {
-            Int128 quotient = temp / Int128{ constants::INT128_BASE };
-            Int128 remainder = temp % Int128{ constants::INT128_BASE };
+            std::uint64_t value{ static_cast<std::uint64_t>( temp.toNative() ) };
+            while( value > 0 && digitCount < digits.size() )
+            {
+                digits[digitCount++] = static_cast<char>( '0' + ( value % constants::INT128_BASE ) );
+                value /= constants::INT128_BASE;
+            }
+        }
+        else
+        {
+            // Full 128-bit extraction
+            while( temp != Int128{} && digitCount < digits.size() )
+            {
+                digits[digitCount++] = static_cast<char>( '0' + ( temp.toNative() % constants::INT128_BASE ) );
+                temp = Int128{ temp.toNative() / constants::INT128_BASE };
+            }
+        }
+#else
+        if( temp.toHigh() == 0 )
+        {
+            // Fast 64-bit path
+            std::uint64_t value{ temp.toLow() };
+            while( value > 0 && digitCount < digits.size() )
+            {
+                digits[digitCount++] = static_cast<char>( '0' + ( value % constants::INT128_BASE ) );
+                value /= constants::INT128_BASE;
+            }
+        }
+        else
+        {
+            // Full 128-bit extraction
+            while( temp != Int128{} && digitCount < digits.size() )
+            {
+                if( temp.toHigh() == 0 )
+                {
+                    // Switched to 64-bit range
+                    std::uint64_t value{ temp.toLow() };
+                    while( value > 0 && digitCount < digits.size() )
+                    {
+                        digits[digitCount++] = static_cast<char>( '0' + ( value % constants::INT128_BASE ) );
+                        value /= constants::INT128_BASE;
+                    }
+                    break;
+                }
+                Int128 remainder{ temp % Int128{ constants::INT128_BASE } };
+                digits[digitCount++] = static_cast<char>( '0' + remainder.toLow() );
+                temp = temp / Int128{ constants::INT128_BASE };
+            }
+        }
+#endif
 
-            // remainder should be 0-9, extract as single digit
-            char digit{ static_cast<char>( '0' + remainder.toLow() ) };
-            result = digit + result;
-
-            temp = quotient;
+        if( digitCount == 0 )
+        {
+            digitCount = 1;
+            digits[0] = '0';
         }
 
+        std::string result;
+        result.reserve( digitCount + 1 );
+
+        // Handle sign
         if( *this < Int128{} )
         {
-            result = '-' + result;
+            result.push_back( '-' );
+        }
+
+        // Add digits in reverse order
+        for( size_t i = digitCount; i > 0; --i )
+        {
+            result.push_back( digits[i - 1] );
         }
 
         return result;

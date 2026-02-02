@@ -28,17 +28,19 @@
  * @details Provides exact decimal arithmetic with portable 128-bit operations
  */
 
+
+
+#include "nfx/datatypes/Decimal.h"
+
+#include "nfx/datatypes/Int128.h"
+#include "nfx/detail/datatypes/Constants.h"
+
 #include <charconv>
 #include <cmath>
 #include <iomanip>
 #include <istream>
 #include <ostream>
 #include <sstream>
-
-#include "nfx/datatypes/Decimal.h"
-
-#include "nfx/datatypes/Int128.h"
-#include "nfx/detail/datatypes/Constants.h"
 
 namespace nfx::datatypes
 {
