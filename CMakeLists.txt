@@ -65,7 +65,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 #----------------------------------------------
 
 include(nfxDataTypesBuildConfig)
-include(nfxDataTypesDependencies)
 include(nfxDataTypesSources)
 include(nfxDataTypesTargets)
 

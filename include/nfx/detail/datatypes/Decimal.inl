@@ -50,7 +50,7 @@ namespace nfx::datatypes
     inline Decimal::Decimal( std::int32_t value ) noexcept
         : m_layout{ 0, { { 0, 0, 0 } } }
     {
-        if ( value < 0 )
+        if( value < 0 )
         {
             m_layout.flags |= constants::DECIMAL_SIGN_MASK;
             value = -value;
@@ -62,7 +62,7 @@ namespace nfx::datatypes
     inline Decimal::Decimal( std::int64_t value ) noexcept
         : m_layout{ 0, { { 0, 0, 0 } } }
     {
-        if ( value < 0 )
+        if( value < 0 )
         {
             m_layout.flags |= constants::DECIMAL_SIGN_MASK;
             value = -value;
@@ -88,7 +88,7 @@ namespace nfx::datatypes
     inline Decimal::Decimal( std::string_view str )
         : m_layout{ 0, { { 0, 0, 0 } } }
     {
-        if ( !fromString( str, *this ) )
+        if( !fromString( str, *this ) )
         {
             throw std::invalid_argument{ "Invalid decimal string format" };
         }
@@ -135,7 +135,7 @@ namespace nfx::datatypes
 
     inline bool Decimal::operator==( double val ) const noexcept
     {
-        if ( std::isnan( val ) || std::isinf( val ) )
+        if( std::isnan( val ) || std::isinf( val ) )
         {
             return false; // Decimal has no NaN/Infinity representation
         }
@@ -152,11 +152,11 @@ namespace nfx::datatypes
 
     inline bool Decimal::operator<( double val ) const noexcept
     {
-        if ( std::isnan( val ) )
+        if( std::isnan( val ) )
         {
             return false; // No ordering with NaN
         }
-        if ( std::isinf( val ) )
+        if( std::isinf( val ) )
         {
             return val > 0.0; // Any finite value < +infinity, any finite value > -infinity
         }
@@ -172,11 +172,11 @@ namespace nfx::datatypes
 
     inline bool Decimal::operator>( double val ) const noexcept
     {
-        if ( std::isnan( val ) )
+        if( std::isnan( val ) )
         {
             return false; // No ordering with NaN
         }
-        if ( std::isinf( val ) )
+        if( std::isinf( val ) )
         {
             return val < 0.0; // Any finite value > -infinity, any finite value < +infinity
         }
@@ -197,7 +197,7 @@ namespace nfx::datatypes
     inline bool Decimal::operator==( std::int64_t val ) const noexcept
     {
         // For integer comparison, we need exact equality
-        if ( scale() > 0 )
+        if( scale() > 0 )
         {
             // If this has fractional part, it can't equal an integer
             return false;
@@ -236,12 +236,12 @@ namespace nfx::datatypes
 
     inline bool Decimal::operator==( std::uint64_t val ) const noexcept
     {
-        if ( scale() > 0 )
+        if( scale() > 0 )
         {
             return false;
         }
 
-        if ( *this < Decimal{} )
+        if( *this < Decimal{} )
         {
             return false;
         }
@@ -257,7 +257,7 @@ namespace nfx::datatypes
 
     inline bool Decimal::operator<( std::uint64_t val ) const noexcept
     {
-        if ( *this < Decimal{} )
+        if( *this < Decimal{} )
         {
             return true;
         }
@@ -273,7 +273,7 @@ namespace nfx::datatypes
 
     inline bool Decimal::operator>( std::uint64_t val ) const noexcept
     {
-        if ( *this < Decimal{} )
+        if( *this < Decimal{} )
         {
             return false;
         }
@@ -392,7 +392,8 @@ namespace nfx::datatypes
 
     inline std::uint8_t Decimal::scale() const noexcept
     {
-        return static_cast<std::uint8_t>( ( m_layout.flags & constants::DECIMAL_SCALE_MASK ) >> constants::DECIMAL_SCALE_SHIFT );
+        return static_cast<std::uint8_t>(
+            ( m_layout.flags & constants::DECIMAL_SCALE_MASK ) >> constants::DECIMAL_SCALE_SHIFT );
     }
 
     inline const std::uint32_t& Decimal::flags() const noexcept
@@ -421,7 +422,7 @@ namespace nfx::datatypes
 
     inline Decimal Decimal::abs() const noexcept
     {
-        if ( *this < Decimal{} )
+        if( *this < Decimal{} )
         {
             return -*this;
         }
@@ -502,7 +503,8 @@ namespace std
             result.m_layout.mantissa[0] = nfx::datatypes::constants::DECIMAL_MIN_MANTISSA_0;
             result.m_layout.mantissa[1] = nfx::datatypes::constants::DECIMAL_MIN_MANTISSA_1;
             result.m_layout.mantissa[2] = nfx::datatypes::constants::DECIMAL_MIN_MANTISSA_2;
-            result.m_layout.flags = ( nfx::datatypes::constants::DECIMAL_MAXIMUM_PLACES << nfx::datatypes::constants::DECIMAL_SCALE_SHIFT );
+            result.m_layout.flags =
+                ( nfx::datatypes::constants::DECIMAL_MAXIMUM_PLACES << nfx::datatypes::constants::DECIMAL_SCALE_SHIFT );
             return result;
         }
 
@@ -534,7 +536,8 @@ namespace std
             result.m_layout.mantissa[0] = nfx::datatypes::constants::DECIMAL_MIN_MANTISSA_0;
             result.m_layout.mantissa[1] = nfx::datatypes::constants::DECIMAL_MIN_MANTISSA_1;
             result.m_layout.mantissa[2] = nfx::datatypes::constants::DECIMAL_MIN_MANTISSA_2;
-            result.m_layout.flags = ( nfx::datatypes::constants::DECIMAL_MAXIMUM_PLACES << nfx::datatypes::constants::DECIMAL_SCALE_SHIFT );
+            result.m_layout.flags =
+                ( nfx::datatypes::constants::DECIMAL_MAXIMUM_PLACES << nfx::datatypes::constants::DECIMAL_SCALE_SHIFT );
             return result;
         }
 

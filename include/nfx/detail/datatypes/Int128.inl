@@ -78,7 +78,7 @@ namespace nfx::datatypes
 
     inline Int128::Int128( std::string_view str )
     {
-        if ( !fromString( str, *this ) )
+        if( !fromString( str, *this ) )
         {
             throw std::invalid_argument{ "Invalid Int128 string format" };
         }
@@ -100,11 +100,11 @@ namespace nfx::datatypes
 
     inline std::strong_ordering Int128::operator<=>( const Int128& other ) const noexcept
     {
-        if ( m_value < other.m_value )
+        if( m_value < other.m_value )
         {
             return std::strong_ordering::less;
         }
-        if ( m_value > other.m_value )
+        if( m_value > other.m_value )
         {
             return std::strong_ordering::greater;
         }
@@ -296,7 +296,7 @@ namespace nfx::datatypes
 
     inline Int128 Int128::operator/( const Int128& other ) const
     {
-        if ( other.m_value == 0 )
+        if( other.m_value == 0 )
         {
             throw std::overflow_error{ "Division by zero" };
         }
@@ -305,7 +305,7 @@ namespace nfx::datatypes
 
     inline Int128 Int128::operator%( const Int128& other ) const
     {
-        if ( other.m_value == 0 )
+        if( other.m_value == 0 )
         {
             throw std::overflow_error{ "Division by zero" };
         }
@@ -324,9 +324,7 @@ namespace nfx::datatypes
 
     inline Int128 Int128::abs() const noexcept
     {
-        return Int128{ m_value < 0
-                           ? -m_value
-                           : m_value };
+        return Int128{ m_value < 0 ? -m_value : m_value };
     }
 
     //----------------------------------------------
@@ -372,16 +370,12 @@ namespace nfx::datatypes
     }
 
     inline constexpr Int128::Int128( int val ) noexcept
-        : m_layout{ static_cast<std::uint64_t>( val ),
-              ( val < 0 ) ? static_cast<std::uint64_t>( -1 )
-                          : 0 }
+        : m_layout{ static_cast<std::uint64_t>( val ), ( val < 0 ) ? static_cast<std::uint64_t>( -1 ) : 0 }
     {
     }
 
     inline constexpr Int128::Int128( std::int64_t val ) noexcept
-        : m_layout{ static_cast<std::uint64_t>( val ),
-              ( val < 0 ) ? static_cast<std::uint64_t>( -1 )
-                          : 0 }
+        : m_layout{ static_cast<std::uint64_t>( val ), ( val < 0 ) ? static_cast<std::uint64_t>( -1 ) : 0 }
     {
     }
 
@@ -397,7 +391,7 @@ namespace nfx::datatypes
 
     inline Int128::Int128( std::string_view str )
     {
-        if ( !fromString( str, *this ) )
+        if( !fromString( str, *this ) )
         {
             throw std::invalid_argument{ "Invalid Int128 string format" };
         }
@@ -422,29 +416,29 @@ namespace nfx::datatypes
         bool thisNeg = static_cast<std::int64_t>( m_layout.upper64bits ) < 0;
         bool otherNeg = static_cast<std::int64_t>( other.m_layout.upper64bits ) < 0;
 
-        if ( thisNeg && !otherNeg )
+        if( thisNeg && !otherNeg )
         {
             return std::strong_ordering::less;
         }
-        if ( !thisNeg && otherNeg )
+        if( !thisNeg && otherNeg )
         {
             return std::strong_ordering::greater;
         }
 
-        if ( m_layout.upper64bits < other.m_layout.upper64bits )
+        if( m_layout.upper64bits < other.m_layout.upper64bits )
         {
             return std::strong_ordering::less;
         }
-        if ( m_layout.upper64bits > other.m_layout.upper64bits )
+        if( m_layout.upper64bits > other.m_layout.upper64bits )
         {
             return std::strong_ordering::greater;
         }
 
-        if ( m_layout.lower64bits < other.m_layout.lower64bits )
+        if( m_layout.lower64bits < other.m_layout.lower64bits )
         {
             return std::strong_ordering::less;
         }
-        if ( m_layout.lower64bits > other.m_layout.lower64bits )
+        if( m_layout.lower64bits > other.m_layout.lower64bits )
         {
             return std::strong_ordering::greater;
         }
@@ -504,7 +498,7 @@ namespace nfx::datatypes
 
     inline Int128& Int128::operator/=( const Int128& other )
     {
-        if ( other.m_value == 0 )
+        if( other.m_value == 0 )
         {
             throw std::overflow_error{ "Division by zero" };
         }
@@ -514,7 +508,7 @@ namespace nfx::datatypes
 
     inline Int128& Int128::operator%=( const Int128& other )
     {
-        if ( other.m_value == 0 )
+        if( other.m_value == 0 )
         {
             throw std::overflow_error{ "Division by zero" };
         }
@@ -526,7 +520,8 @@ namespace nfx::datatypes
     {
         // 128-bit addition with carry propagation
         std::uint64_t resultLow{ m_layout.lower64bits + other.m_layout.lower64bits };
-        std::uint64_t carry{ ( resultLow < m_layout.lower64bits ) ? constants::BIT_MASK_ONE : constants::BIT_MASK_ZERO };
+        std::uint64_t carry{ ( resultLow < m_layout.lower64bits ) ? constants::BIT_MASK_ONE
+                                                                  : constants::BIT_MASK_ZERO };
         std::uint64_t resultHigh{ m_layout.upper64bits + other.m_layout.upper64bits + carry };
         return Int128{ resultLow, resultHigh };
     }
@@ -535,7 +530,8 @@ namespace nfx::datatypes
     {
         // 128-bit subtraction with borrow propagation
         std::uint64_t resultLow{ m_layout.lower64bits - other.m_layout.lower64bits };
-        std::uint64_t borrow{ ( m_layout.lower64bits < other.m_layout.lower64bits ) ? constants::BIT_MASK_ONE : constants::BIT_MASK_ZERO };
+        std::uint64_t borrow{ ( m_layout.lower64bits < other.m_layout.lower64bits ) ? constants::BIT_MASK_ONE
+                                                                                    : constants::BIT_MASK_ZERO };
         std::uint64_t resultHigh{ m_layout.upper64bits - other.m_layout.upper64bits - borrow };
         return Int128{ resultLow, resultHigh };
     }
@@ -566,7 +562,7 @@ namespace nfx::datatypes
 
     inline Int128& Int128::operator%=( const Int128& other )
     {
-        if ( other == Int128{} )
+        if( other == Int128{} )
         {
             throw std::overflow_error{ "Division by zero" };
         }
@@ -576,13 +572,13 @@ namespace nfx::datatypes
 
     inline Int128 Int128::operator%( const Int128& other ) const
     {
-        if ( other == Int128{} )
+        if( other == Int128{} )
         {
             throw std::overflow_error{ "Division by zero" };
         }
 
         // Performance optimization: Fast modulo for 64-bit values
-        if ( m_layout.upper64bits == 0 && other.m_layout.upper64bits == 0 )
+        if( m_layout.upper64bits == 0 && other.m_layout.upper64bits == 0 )
         {
             // Both fit in 64-bit - use native modulo
             return Int128{ m_layout.lower64bits % other.m_layout.lower64bits, 0 };
@@ -650,8 +646,7 @@ namespace nfx::datatypes
         // For positive values, upper64bits should be 0
         std::uint64_t expected_upper = ( val < 0 ) ? static_cast<std::uint64_t>( -1 ) : 0;
 
-        return m_layout.upper64bits == expected_upper &&
-               m_layout.lower64bits == static_cast<std::uint64_t>( val );
+        return m_layout.upper64bits == expected_upper && m_layout.lower64bits == static_cast<std::uint64_t>( val );
     }
 
     inline bool Int128::operator!=( std::int64_t val ) const noexcept
@@ -666,7 +661,7 @@ namespace nfx::datatypes
         std::uint64_t expected_upper = ( val < 0 ) ? static_cast<std::uint64_t>( -1 ) : 0;
 
         // Compare as signed values for correct ordering
-        if ( m_layout.upper64bits != expected_upper )
+        if( m_layout.upper64bits != expected_upper )
         {
             return static_cast<std::int64_t>( m_layout.upper64bits ) < static_cast<std::int64_t>( expected_upper );
         }
@@ -685,7 +680,7 @@ namespace nfx::datatypes
         std::uint64_t expected_upper = ( val < 0 ) ? static_cast<std::uint64_t>( -1 ) : 0;
 
         // Compare as signed values for correct ordering
-        if ( m_layout.upper64bits != expected_upper )
+        if( m_layout.upper64bits != expected_upper )
         {
             return static_cast<std::int64_t>( m_layout.upper64bits ) > static_cast<std::int64_t>( expected_upper );
         }
@@ -711,13 +706,13 @@ namespace nfx::datatypes
     inline bool Int128::operator<( std::uint64_t val ) const noexcept
     {
         // If this is negative, it's always less than any positive uint64_t
-        if ( *this < Int128{} )
+        if( *this < Int128{} )
         {
             return true;
         }
 
         // If upper bits are non-zero, this is definitely >= 2^64, so greater than any uint64_t
-        if ( m_layout.upper64bits != 0 )
+        if( m_layout.upper64bits != 0 )
         {
             return false;
         }
@@ -734,13 +729,13 @@ namespace nfx::datatypes
     inline bool Int128::operator>( std::uint64_t val ) const noexcept
     {
         // If this is negative, it's never greater than any positive uint64_t
-        if ( *this < Int128{} )
+        if( *this < Int128{} )
         {
             return false;
         }
 
         // If upper bits are non-zero, this is definitely >= 2^64, so greater than any uint64_t
-        if ( m_layout.upper64bits != 0 )
+        if( m_layout.upper64bits != 0 )
         {
             return true;
         }
@@ -809,7 +804,7 @@ namespace nfx::datatypes
 
     inline Int128 Int128::abs() const noexcept
     {
-        if ( !( *this < Int128{} ) )
+        if( !( *this < Int128{} ) )
         {
             return *this;
         }
@@ -897,17 +892,15 @@ namespace std
         static nfx::datatypes::Int128 min() noexcept
         {
             // Minimum value: -2^127 = -170141183460469231731687303715884105728
-            return nfx::datatypes::Int128{
-                nfx::datatypes::constants::INT128_MIN_NEGATIVE_LOW,
-                nfx::datatypes::constants::INT128_MIN_NEGATIVE_HIGH };
+            return nfx::datatypes::Int128{ nfx::datatypes::constants::INT128_MIN_NEGATIVE_LOW,
+                                           nfx::datatypes::constants::INT128_MIN_NEGATIVE_HIGH };
         }
 
         static nfx::datatypes::Int128 max() noexcept
         {
             // Maximum value: 2^127 - 1 = 170141183460469231731687303715884105727
-            return nfx::datatypes::Int128{
-                nfx::datatypes::constants::INT128_MAX_POSITIVE_LOW,
-                nfx::datatypes::constants::INT128_MAX_POSITIVE_HIGH };
+            return nfx::datatypes::Int128{ nfx::datatypes::constants::INT128_MAX_POSITIVE_LOW,
+                                           nfx::datatypes::constants::INT128_MAX_POSITIVE_HIGH };
         }
 
         static nfx::datatypes::Int128 lowest() noexcept
@@ -920,10 +913,12 @@ namespace std
             return nfx::datatypes::Int128{ 0 };
         }
 
-        static constexpr int digits = nfx::datatypes::constants::INT128_DIGITS;             // value bits (excluding sign bit)
-        static constexpr int digits10 = nfx::datatypes::constants::INT128_DIGITS10;         // decimal digits (floor(127 * log10(2)))
-        static constexpr int max_digits10 = nfx::datatypes::constants::INT128_MAX_DIGITS10; // not applicable for integers
-        static constexpr int radix = nfx::datatypes::constants::INT128_RADIX;               // binary
+        static constexpr int digits = nfx::datatypes::constants::INT128_DIGITS; // value bits (excluding sign bit)
+        static constexpr int digits10 =
+            nfx::datatypes::constants::INT128_DIGITS10; // decimal digits (floor(127 * log10(2)))
+        static constexpr int max_digits10 =
+            nfx::datatypes::constants::INT128_MAX_DIGITS10;                   // not applicable for integers
+        static constexpr int radix = nfx::datatypes::constants::INT128_RADIX; // binary
         static constexpr int min_exponent = 0;
         static constexpr int min_exponent10 = 0;
         static constexpr int max_exponent = 0;

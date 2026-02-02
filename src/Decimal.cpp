@@ -59,7 +59,7 @@ namespace nfx::datatypes
             std::uint64_t carry = 0;
 
             // Multiply by 10 (shift left 3 bits + shift left 1 bit = multiply by 8 + 2 = 10)
-            for ( int i = 0; i < constants::DECIMAL_MANTISSA_ARRAY_SIZE; ++i )
+            for( int i = 0; i < constants::DECIMAL_MANTISSA_ARRAY_SIZE; ++i )
             {
                 std::uint64_t temp = static_cast<std::uint64_t>( mantissa[i] ) * constants::DECIMAL_BASE + carry;
                 mantissa[i] = static_cast<std::uint32_t>( temp );
@@ -68,7 +68,7 @@ namespace nfx::datatypes
 
             // Add the digit
             carry = digit;
-            for ( int i = 0; i < constants::DECIMAL_MANTISSA_ARRAY_SIZE && carry > 0; ++i )
+            for( int i = 0; i < constants::DECIMAL_MANTISSA_ARRAY_SIZE && carry > 0; ++i )
             {
                 std::uint64_t temp = static_cast<std::uint64_t>( mantissa[i] ) + carry;
                 mantissa[i] = static_cast<std::uint32_t>( temp );
@@ -83,22 +83,24 @@ namespace nfx::datatypes
          */
         static Int128 powerOf10( std::uint8_t power ) noexcept
         {
-            if ( power < constants::DECIMAL_POWER_TABLE_SIZE && constants::DECIMAL_POWERS_OF_10[power] != 0 )
+            if( power < constants::DECIMAL_POWER_TABLE_SIZE && constants::DECIMAL_POWERS_OF_10[power] != 0 )
             {
                 // Use 64-bit lookup table for powers 0-19
                 return Int128{ constants::DECIMAL_POWERS_OF_10[power] };
             }
-            else if ( power >= constants::DECIMAL_EXTENDED_POWER_MIN && power <= constants::DECIMAL_EXTENDED_POWER_MAX )
+            else if( power >= constants::DECIMAL_EXTENDED_POWER_MIN && power <= constants::DECIMAL_EXTENDED_POWER_MAX )
             {
                 // Use pre-computed 128-bit values for powers 20-28
-                const auto& extended{ constants::DECIMAL_EXTENDED_POWERS_OF_10[power - constants::DECIMAL_EXTENDED_POWER_MIN] };
+                const auto& extended{
+                    constants::DECIMAL_EXTENDED_POWERS_OF_10[power - constants::DECIMAL_EXTENDED_POWER_MIN]
+                };
                 return Int128{ extended.first, extended.second };
             }
             else
             {
                 // Fallback to iterative computation for invalid powers (shouldn't happen)
                 Int128 result{ 1 };
-                for ( std::uint8_t i{ 0 }; i < power; ++i )
+                for( std::uint8_t i{ 0 }; i < power; ++i )
                 {
                     result = result * Int128{ constants::DECIMAL_BASE };
                 }
@@ -115,14 +117,17 @@ namespace nfx::datatypes
         {
 #if NFX_DATATYPES_HAS_NATIVE_INT128
             const auto& mantissaArray{ decimal.mantissa() };
-            NFX_DATATYPES_NATIVE_INT128 value{ static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[2] ) << constants::BITS_PER_UINT64 |
-                                               static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[1] ) << constants::BITS_PER_UINT32 |
+            NFX_DATATYPES_NATIVE_INT128 value{ static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[2] )
+                                                   << constants::BITS_PER_UINT64 |
+                                               static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[1] )
+                                                   << constants::BITS_PER_UINT32 |
                                                static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[0] ) };
 
             return Int128{ value };
 #else
             const auto& mantissaArray{ decimal.mantissa() };
-            std::uint64_t low{ static_cast<std::uint64_t>( mantissaArray[1] ) << constants::BITS_PER_UINT32 | mantissaArray[0] };
+            std::uint64_t low{ static_cast<std::uint64_t>( mantissaArray[1] ) << constants::BITS_PER_UINT32 |
+                               mantissaArray[0] };
             std::uint64_t high{ mantissaArray[2] };
 
             return Int128{ low, high };
@@ -144,12 +149,12 @@ namespace nfx::datatypes
             std::uint8_t rightScale{ other.scale() };
 
             // Optimized scaling using enhanced power-of-10 lookup with 128-bit support
-            if ( leftScale < rightScale )
+            if( leftScale < rightScale )
             {
                 std::uint8_t scaleDiff{ static_cast<std::uint8_t>( rightScale - leftScale ) };
                 left = left * powerOf10( scaleDiff );
             }
-            else if ( rightScale < leftScale )
+            else if( rightScale < leftScale )
             {
                 std::uint8_t scaleDiff{ static_cast<std::uint8_t>( leftScale - rightScale ) };
                 right = right * powerOf10( scaleDiff );
@@ -204,14 +209,15 @@ namespace nfx::datatypes
         static void normalize( Decimal& decimal ) noexcept
         {
             // Remove trailing zeros and reduce scale
-            while ( decimal.scale() > 0 && ( mantissaAsInt128( decimal ) % Int128{ constants::DECIMAL_BASE } ) == Int128{ 0 } )
+            while( decimal.scale() > 0 &&
+                   ( mantissaAsInt128( decimal ) % Int128{ constants::DECIMAL_BASE } ) == Int128{ 0 } )
             {
                 divideByPowerOf10( decimal, 1U );
                 std::uint8_t currentScale{ decimal.scale() };
                 std::uint32_t currentFlags = decimal.flags();
-                std::uint32_t newFlags = ( currentFlags & ~constants::DECIMAL_SCALE_MASK ) |
-                                         ( static_cast<std::uint32_t>( currentScale - 1U )
-                                             << constants::DECIMAL_SCALE_SHIFT );
+                std::uint32_t newFlags =
+                    ( currentFlags & ~constants::DECIMAL_SCALE_MASK ) |
+                    ( static_cast<std::uint32_t>( currentScale - 1U ) << constants::DECIMAL_SCALE_SHIFT );
                 decimal.flags() = newFlags;
             }
         }
@@ -220,19 +226,22 @@ namespace nfx::datatypes
          * @brief Determine if rounding up is needed for ToNearest mode (Banker's rounding)
          */
 
-        static bool shouldRoundUpToNearest( const Int128& roundingDigit, const Int128& mantissa,
-            const Int128& divisor, std::uint8_t digitsToRemove,
+        static bool shouldRoundUpToNearest(
+            const Int128& roundingDigit,
+            const Int128& mantissa,
+            const Int128& divisor,
+            std::uint8_t digitsToRemove,
             const Decimal& result ) noexcept
         {
-            if ( roundingDigit.toLow() > constants::DECIMAL_ROUNDING_THRESHOLD )
+            if( roundingDigit.toLow() > constants::DECIMAL_ROUNDING_THRESHOLD )
             {
                 return true; // > 5: always round away from zero
             }
-            else if ( roundingDigit.toLow() == constants::DECIMAL_ROUNDING_THRESHOLD )
+            else if( roundingDigit.toLow() == constants::DECIMAL_ROUNDING_THRESHOLD )
             {
                 // == 5: check if there are any non-zero digits after this one
                 bool hasRemainingFraction{ false };
-                if ( digitsToRemove > 1U )
+                if( digitsToRemove > 1U )
                 {
                     Int128 remainderDivisor{ divisor };
                     Int128 remainder{ mantissa % remainderDivisor };
@@ -240,7 +249,7 @@ namespace nfx::datatypes
                     hasRemainingFraction = ( remainder != roundingDigitContribution );
                 }
 
-                if ( hasRemainingFraction )
+                if( hasRemainingFraction )
                 {
                     return true; // Ties away from zero when there's additional fractional part
                 }
@@ -266,16 +275,16 @@ namespace nfx::datatypes
         /**
          * @brief Determine if rounding up is needed for ToPositiveInfinity mode (Ceiling)
          */
-        static bool shouldRoundUpToPositiveInfinity( const Int128& mantissa, std::uint8_t digitsToRemove,
-            bool isNegative ) noexcept
+        static bool shouldRoundUpToPositiveInfinity(
+            const Int128& mantissa, std::uint8_t digitsToRemove, bool isNegative ) noexcept
         {
-            if ( isNegative )
+            if( isNegative )
             {
                 return false; // Negative numbers round toward zero for ceiling
             }
 
             // Check if ANY fractional digits exist
-            if ( digitsToRemove > 0 )
+            if( digitsToRemove > 0 )
             {
                 Int128 fractionalDivisor{ powerOf10( digitsToRemove ) };
                 Int128 fractionalPart{ mantissa % fractionalDivisor };
@@ -287,16 +296,16 @@ namespace nfx::datatypes
         /**
          * @brief Determine if rounding up is needed for ToNegativeInfinity mode (Floor)
          */
-        static bool shouldRoundUpToNegativeInfinity( const Int128& mantissa, std::uint8_t digitsToRemove,
-            bool isNegative ) noexcept
+        static bool shouldRoundUpToNegativeInfinity(
+            const Int128& mantissa, std::uint8_t digitsToRemove, bool isNegative ) noexcept
         {
-            if ( !isNegative )
+            if( !isNegative )
             {
                 return false; // Positive numbers round toward zero for floor
             }
 
             // Check if ANY fractional digits exist
-            if ( digitsToRemove > 0 )
+            if( digitsToRemove > 0 )
             {
                 Int128 fractionalDivisor{ powerOf10( digitsToRemove ) };
                 Int128 fractionalPart{ mantissa % fractionalDivisor };
@@ -317,7 +326,7 @@ namespace nfx::datatypes
     Decimal::Decimal( float value ) noexcept
         : m_layout{ 0, { { 0, 0, 0 } } }
     {
-        if ( std::isnan( value ) || std::isinf( value ) || value == 0.0f )
+        if( std::isnan( value ) || std::isinf( value ) || value == 0.0f )
         {
             return;
         }
@@ -327,10 +336,9 @@ namespace nfx::datatypes
         float absValue = value < 0 ? -value : value;
         int precision = ( absValue > 0 && absValue < 1e-6f ) ? 10 : 4;
 
-        auto [ptr, ec] = std::to_chars( buffer, buffer + sizeof( buffer ), value,
-            std::chars_format::fixed, precision );
+        auto [ptr, ec] = std::to_chars( buffer, buffer + sizeof( buffer ), value, std::chars_format::fixed, precision );
 
-        if ( ec != std::errc{} )
+        if( ec != std::errc{} )
         {
             return; // Zero on error
         }
@@ -341,43 +349,43 @@ namespace nfx::datatypes
 
         // Handle sign
         bool negative = false;
-        if ( *p == '-' )
+        if( *p == '-' )
         {
             negative = true;
             ++p;
         }
-        else if ( *p == '+' )
+        else if( *p == '+' )
         {
             ++p;
         }
 
         // Parse digits and track decimal point
         const char* decimalPoint = nullptr;
-        while ( p < end )
+        while( p < end )
         {
-            if ( *p == '.' )
+            if( *p == '.' )
             {
                 decimalPoint = p;
                 ++p;
                 continue;
             }
 
-            if ( *p >= '0' && *p <= '9' )
+            if( *p >= '0' && *p <= '9' )
             {
-                internal::multiplyMantissaBy10AndAdd( m_layout.mantissa.data(),
-                    static_cast<std::uint32_t>( *p - '0' ) );
+                internal::multiplyMantissaBy10AndAdd(
+                    m_layout.mantissa.data(), static_cast<std::uint32_t>( *p - '0' ) );
             }
             ++p;
         }
 
         // Calculate scale (digits after decimal point)
         std::uint8_t scale = 0;
-        if ( decimalPoint )
+        if( decimalPoint )
         {
             scale = static_cast<std::uint8_t>( end - decimalPoint - 1 );
 
             // Remove trailing zeros from the string representation
-            while ( scale > 0 && buffer[end - p - 1] == '0' )
+            while( scale > 0 && buffer[end - p - 1] == '0' )
             {
                 --scale;
                 --end;
@@ -385,7 +393,7 @@ namespace nfx::datatypes
         }
 
         m_layout.flags = ( scale << constants::DECIMAL_SCALE_SHIFT );
-        if ( negative )
+        if( negative )
         {
             m_layout.flags |= constants::DECIMAL_SIGN_MASK;
         }
@@ -396,7 +404,7 @@ namespace nfx::datatypes
     Decimal::Decimal( double value ) noexcept
         : m_layout{ 0, { { 0, 0, 0 } } }
     {
-        if ( std::isnan( value ) || std::isinf( value ) || value == 0.0 )
+        if( std::isnan( value ) || std::isinf( value ) || value == 0.0 )
         {
             return;
         }
@@ -407,10 +415,9 @@ namespace nfx::datatypes
         // while avoiding binary representation artifacts
         char buffer[64];
 
-        auto [ptr, ec] = std::to_chars( buffer, buffer + sizeof( buffer ), value,
-            std::chars_format::fixed );
+        auto [ptr, ec] = std::to_chars( buffer, buffer + sizeof( buffer ), value, std::chars_format::fixed );
 
-        if ( ec != std::errc{} )
+        if( ec != std::errc{} )
         {
             return; // Zero on error
         }
@@ -421,44 +428,44 @@ namespace nfx::datatypes
 
         // Handle sign
         bool negative = false;
-        if ( *p == '-' )
+        if( *p == '-' )
         {
             negative = true;
             ++p;
         }
-        else if ( *p == '+' )
+        else if( *p == '+' )
         {
             ++p;
         }
 
         // Parse digits and track decimal point
         const char* decimalPoint = nullptr;
-        while ( p < end )
+        while( p < end )
         {
-            if ( *p == '.' )
+            if( *p == '.' )
             {
                 decimalPoint = p;
                 ++p;
                 continue;
             }
 
-            if ( *p >= '0' && *p <= '9' )
+            if( *p >= '0' && *p <= '9' )
             {
-                internal::multiplyMantissaBy10AndAdd( m_layout.mantissa.data(),
-                    static_cast<std::uint32_t>( *p - '0' ) );
+                internal::multiplyMantissaBy10AndAdd(
+                    m_layout.mantissa.data(), static_cast<std::uint32_t>( *p - '0' ) );
             }
             ++p;
         }
 
         // Calculate scale (digits after decimal point)
         std::uint8_t scale = 0;
-        if ( decimalPoint )
+        if( decimalPoint )
         {
             scale = static_cast<std::uint8_t>( end - decimalPoint - 1 );
         }
 
         m_layout.flags = ( scale << constants::DECIMAL_SCALE_SHIFT );
-        if ( negative )
+        if( negative )
         {
             m_layout.flags |= constants::DECIMAL_SIGN_MASK;
         }
@@ -469,7 +476,7 @@ namespace nfx::datatypes
     Decimal::Decimal( const Int128& val )
         : m_layout{ 0, { { 0, 0, 0 } } }
     {
-        if ( val == Int128{} )
+        if( val == Int128{} )
         {
             return;
         }
@@ -480,14 +487,14 @@ namespace nfx::datatypes
         // Handle the special case of minimum Int128 value (-2^127)
         // This value cannot be represented positively in 128-bit signed integer
         Int128 absoluteValue;
-        if ( val == std::numeric_limits<Int128>::min() )
+        if( val == std::numeric_limits<Int128>::min() )
         {
             // Minimum Int128 value exceeds Decimal's 96-bit capacity
             throw std::overflow_error( "Int128 value exceeds Decimal range (±79228162514264337593543950335)" );
         }
 
         absoluteValue = val.abs();
-        if ( isNegative )
+        if( isNegative )
         {
             m_layout.flags |= constants::DECIMAL_SIGN_MASK;
         }
@@ -498,7 +505,7 @@ namespace nfx::datatypes
 
         // Check if the high 64 bits contain anything beyond what fits in 32 bits (mantissa[2])
         std::uint64_t high64 = absoluteValue.toHigh();
-        if ( high64 > constants::UINT32_MAX_VALUE )
+        if( high64 > constants::UINT32_MAX_VALUE )
         {
             // Value exceeds Decimal's 96-bit mantissa capacity
             throw std::overflow_error( "Int128 value exceeds Decimal range (±79228162514264337593543950335)" );
@@ -518,7 +525,7 @@ namespace nfx::datatypes
         bool thisNeg = ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0;
         bool otherNeg = ( other.m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0;
 
-        if ( thisNeg != otherNeg )
+        if( thisNeg != otherNeg )
         {
             // Different signs: negative < positive
             return thisNeg ? std::strong_ordering::less : std::strong_ordering::greater;
@@ -528,13 +535,13 @@ namespace nfx::datatypes
         auto [leftMantissa, rightMantissa] = internal::alignScale( *this, other );
 
         // For both negative, reverse the comparison
-        if ( thisNeg )
+        if( thisNeg )
         {
-            if ( leftMantissa > rightMantissa )
+            if( leftMantissa > rightMantissa )
             {
                 return std::strong_ordering::less;
             }
-            if ( leftMantissa < rightMantissa )
+            if( leftMantissa < rightMantissa )
             {
                 return std::strong_ordering::greater;
             }
@@ -542,11 +549,11 @@ namespace nfx::datatypes
         }
 
         // Both positive or both zero
-        if ( leftMantissa < rightMantissa )
+        if( leftMantissa < rightMantissa )
         {
             return std::strong_ordering::less;
         }
-        if ( leftMantissa > rightMantissa )
+        if( leftMantissa > rightMantissa )
         {
             return std::strong_ordering::greater;
         }
@@ -557,9 +564,10 @@ namespace nfx::datatypes
     {
         // Check both zero by inspecting mantissa directly
         bool thisZero = m_layout.mantissa[0] == 0 && m_layout.mantissa[1] == 0 && m_layout.mantissa[2] == 0;
-        bool otherZero = other.m_layout.mantissa[0] == 0 && other.m_layout.mantissa[1] == 0 && other.m_layout.mantissa[2] == 0;
+        bool otherZero =
+            other.m_layout.mantissa[0] == 0 && other.m_layout.mantissa[1] == 0 && other.m_layout.mantissa[2] == 0;
 
-        if ( thisZero && otherZero )
+        if( thisZero && otherZero )
         {
             return true;
         }
@@ -568,7 +576,7 @@ namespace nfx::datatypes
         bool thisNeg = ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0;
         bool otherNeg = ( other.m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0;
 
-        if ( thisNeg != otherNeg )
+        if( thisNeg != otherNeg )
         {
             return false;
         }
@@ -585,7 +593,7 @@ namespace nfx::datatypes
     bool Decimal::operator==( const Int128& val ) const noexcept
     {
         // For integer comparison, we need exact equality
-        if ( scale() > 0 )
+        if( scale() > 0 )
         {
             // If this has fractional part, it can't equal an integer
             return false;
@@ -595,9 +603,9 @@ namespace nfx::datatypes
         Int128 mantissa{ internal::mantissaAsInt128( *this ) };
 
         // Handle signs
-        if ( *this < Decimal{} )
+        if( *this < Decimal{} )
         {
-            if ( val >= Int128{ 0 } )
+            if( val >= Int128{ 0 } )
             {
                 return false; // Different signs
             }
@@ -606,7 +614,7 @@ namespace nfx::datatypes
         }
         else
         {
-            if ( val < Int128{ 0 } )
+            if( val < Int128{ 0 } )
             {
                 return false; // Different signs
             }
@@ -618,11 +626,11 @@ namespace nfx::datatypes
     bool Decimal::operator<( const Int128& val ) const noexcept
     {
         // Handle different signs
-        if ( *this < Decimal{} && val >= Int128{ 0 } )
+        if( *this < Decimal{} && val >= Int128{ 0 } )
         {
             return true; // Negative < Non-negative
         }
-        if ( !( *this < Decimal{} ) && val < Int128{ 0 } )
+        if( !( *this < Decimal{} ) && val < Int128{ 0 } )
         {
             return false; // Non-negative > Negative
         }
@@ -630,12 +638,12 @@ namespace nfx::datatypes
         // Same signs - convert decimal to comparable form
         Int128 mantissa{ internal::mantissaAsInt128( *this ) };
 
-        if ( scale() > 0 )
+        if( scale() > 0 )
         {
             // This decimal has fractional part - scale up the integer for comparison
             Int128 scaledVal{ val * internal::powerOf10( scale() ) };
 
-            if ( *this < Decimal{} )
+            if( *this < Decimal{} )
             {
                 // Both negative - compare absolute values with flipped result
                 return mantissa > scaledVal.abs();
@@ -648,7 +656,7 @@ namespace nfx::datatypes
         else
         {
             // No fractional part - direct comparison
-            if ( *this < Decimal{} )
+            if( *this < Decimal{} )
             {
                 // Both negative - compare absolute values with flipped result
                 return mantissa > val.abs();
@@ -666,11 +674,11 @@ namespace nfx::datatypes
 
     Decimal Decimal::operator+( const Decimal& other )
     {
-        if ( *this == Decimal{} )
+        if( *this == Decimal{} )
         {
             return other;
         }
-        if ( other == Decimal{} )
+        if( other == Decimal{} )
         {
             return *this;
         }
@@ -683,9 +691,9 @@ namespace nfx::datatypes
                                 ( std::max( scale(), other.scale() ) << constants::DECIMAL_SCALE_SHIFT );
 
         // Handle sign
-        if ( ( *this < Decimal{} ) == ( other < Decimal{} ) )
+        if( ( *this < Decimal{} ) == ( other < Decimal{} ) )
         {
-            if ( *this < Decimal{} )
+            if( *this < Decimal{} )
             {
                 result.m_layout.flags |= constants::DECIMAL_SIGN_MASK;
             }
@@ -693,10 +701,10 @@ namespace nfx::datatypes
         else
         {
             // Different signs - need subtraction logic
-            if ( left > right )
+            if( left > right )
             {
                 internal::setMantissa( result, left - right );
-                if ( *this < Decimal{} )
+                if( *this < Decimal{} )
                 {
                     result.m_layout.flags |= constants::DECIMAL_SIGN_MASK;
                 }
@@ -704,7 +712,7 @@ namespace nfx::datatypes
             else
             {
                 internal::setMantissa( result, right - left );
-                if ( other < Decimal{} )
+                if( other < Decimal{} )
                 {
                     result.m_layout.flags |= constants::DECIMAL_SIGN_MASK;
                 }
@@ -718,7 +726,7 @@ namespace nfx::datatypes
 
     Decimal Decimal::operator*( const Decimal& other ) const
     {
-        if ( *this == Decimal{} || other == Decimal{} )
+        if( *this == Decimal{} || other == Decimal{} )
         {
             return Decimal{};
         }
@@ -732,7 +740,7 @@ namespace nfx::datatypes
 
         // If combined scale would exceed maximum, pre-scale operands to prevent Int128 overflow
         // Example: pi(scale=28) × e(scale=28) = scale 56, we need to reduce by 28
-        if ( newScale > constants::DECIMAL_MAXIMUM_PLACES )
+        if( newScale > constants::DECIMAL_MAXIMUM_PLACES )
         {
             std::uint8_t excessScale = newScale - constants::DECIMAL_MAXIMUM_PLACES;
 
@@ -740,14 +748,14 @@ namespace nfx::datatypes
             std::uint8_t leftReduction = excessScale / 2;
             std::uint8_t rightReduction = excessScale - leftReduction;
 
-            if ( leftReduction > 0 )
+            if( leftReduction > 0 )
             {
                 Int128 leftDivisor = internal::powerOf10( leftReduction );
                 Int128 leftHalf = leftDivisor / Int128{ 2 };
                 left = ( left + leftHalf ) / leftDivisor;
             }
 
-            if ( rightReduction > 0 )
+            if( rightReduction > 0 )
             {
                 Int128 rightDivisor = internal::powerOf10( rightReduction );
                 Int128 rightHalf = rightDivisor / Int128{ 2 };
@@ -762,7 +770,7 @@ namespace nfx::datatypes
         const Int128 max96bit{ constants::DECIMAL_96BIT_MAX_LOW, constants::DECIMAL_96BIT_MAX_HIGH };
 
         // If mantissa still exceeds 96 bits, reduce precision iteratively
-        while ( productMantissa > max96bit && newScale > 0 )
+        while( productMantissa > max96bit && newScale > 0 )
         {
             // Use rounding when dividing to minimize precision loss
             productMantissa = ( productMantissa + Int128{ 5 } ) / Int128{ constants::DECIMAL_BASE };
@@ -770,11 +778,11 @@ namespace nfx::datatypes
         }
 
         // Safety check
-        if ( productMantissa > max96bit )
+        if( productMantissa > max96bit )
         {
             // Number is too large for Decimal representation even at scale 0
             // Keep the most significant digits
-            while ( productMantissa > max96bit )
+            while( productMantissa > max96bit )
             {
                 productMantissa = productMantissa / Int128{ constants::DECIMAL_BASE };
             }
@@ -786,7 +794,7 @@ namespace nfx::datatypes
         result.m_layout.flags = ( static_cast<std::uint32_t>( newScale ) << constants::DECIMAL_SCALE_SHIFT );
 
         // Combine signs
-        if ( ( *this < Decimal{} ) != ( other < Decimal{} ) )
+        if( ( *this < Decimal{} ) != ( other < Decimal{} ) )
         {
             result.m_layout.flags |= constants::DECIMAL_SIGN_MASK;
         }
@@ -797,17 +805,18 @@ namespace nfx::datatypes
     }
 
 #ifdef __clang__
-    __attribute__( ( optnone ) ) // Clang aggressively optimizes the mantissa/scale setting operations causing loss of decimal precision.
+    __attribute__( ( optnone ) ) // Clang aggressively optimizes the mantissa/scale setting operations causing loss of
+                                 // decimal precision.
 #endif
-    Decimal
-    Decimal::operator/( const Decimal& other ) const
+                                 Decimal
+                                 Decimal::operator/( const Decimal& other ) const
     {
-        if ( other == Decimal{} )
+        if( other == Decimal{} )
         {
             throw std::overflow_error{ "Division by zero" };
         }
 
-        if ( *this == Decimal{} )
+        if( *this == Decimal{} )
         {
             return Decimal{};
         }
@@ -830,30 +839,32 @@ namespace nfx::datatypes
         std::int32_t divisorScale = static_cast<std::int32_t>( other.scale() );
 
         // Target precision: match the maximum input precision plus extra
-        std::int32_t targetPrecision = std::max( dividendScale, divisorScale ) + constants::DECIMAL_DIVISION_EXTRA_PRECISION;
+        std::int32_t targetPrecision =
+            std::max( dividendScale, divisorScale ) + constants::DECIMAL_DIVISION_EXTRA_PRECISION;
 
         // Limit to maximum Decimal places
-        if ( targetPrecision > constants::DECIMAL_MAXIMUM_PLACES )
+        if( targetPrecision > constants::DECIMAL_MAXIMUM_PLACES )
         {
             targetPrecision = constants::DECIMAL_MAXIMUM_PLACES;
         }
 
         // Scale up dividend to achieve target precision
         // To get result with scale result_scale, we need:
-        // result_mantissa / 10^result_scale = (dividend_mantissa / 10^dividend_scale) / (divisor_mantissa / 10^divisor_scale)
-        // Which means: result_mantissa = (dividend_mantissa * 10^(divisor_scale + result_scale - dividend_scale)) / divisor_mantissa
+        // result_mantissa / 10^result_scale = (dividend_mantissa / 10^dividend_scale) / (divisor_mantissa /
+        // 10^divisor_scale) Which means: result_mantissa = (dividend_mantissa * 10^(divisor_scale + result_scale -
+        // dividend_scale)) / divisor_mantissa
         std::int32_t scaleUpBy = divisorScale + targetPrecision - dividendScale;
 
-        if ( scaleUpBy > 0 )
+        if( scaleUpBy > 0 )
         {
-            for ( std::int32_t i = 0; i < scaleUpBy; ++i )
+            for( std::int32_t i = 0; i < scaleUpBy; ++i )
             {
                 // Check if scaling would cause overflow BEFORE we multiply
-                if ( dividend.toHigh() > constants::INT128_MUL10_OVERFLOW_THRESHOLD )
+                if( dividend.toHigh() > constants::INT128_MUL10_OVERFLOW_THRESHOLD )
                 {
                     // Can't scale more without overflow
                     targetPrecision = i + dividendScale - divisorScale;
-                    if ( targetPrecision < 0 )
+                    if( targetPrecision < 0 )
                     {
                         targetPrecision = 0;
                     }
@@ -861,10 +872,10 @@ namespace nfx::datatypes
                 }
                 Int128 newDividend = dividend * Int128{ constants::DECIMAL_BASE };
                 // Double-check we didn't overflow (result should be positive and bigger)
-                if ( newDividend < dividend )
+                if( newDividend < dividend )
                 {
                     targetPrecision = i + dividendScale - divisorScale;
-                    if ( targetPrecision < 0 )
+                    if( targetPrecision < 0 )
                     {
                         targetPrecision = 0;
                     }
@@ -873,12 +884,12 @@ namespace nfx::datatypes
                 dividend = newDividend;
             }
         }
-        else if ( scaleUpBy < 0 )
+        else if( scaleUpBy < 0 )
         {
             // Need to scale down - shouldn't happen with our target precision logic
             // Just use the dividend as-is
             targetPrecision = dividendScale - divisorScale;
-            if ( targetPrecision < 0 )
+            if( targetPrecision < 0 )
             {
                 targetPrecision = 0;
             }
@@ -888,7 +899,7 @@ namespace nfx::datatypes
 
         // Check if quotient fits in 96 bits
         // A 96-bit value has toHigh() <= 0xFFFFFFFF (only lower 32 bits of high word can be set)
-        while ( quotientMantissa.toHigh() > 0xFFFFFFFFULL && targetPrecision > 0 )
+        while( quotientMantissa.toHigh() > 0xFFFFFFFFULL && targetPrecision > 0 )
         {
             quotientMantissa = quotientMantissa / Int128{ constants::DECIMAL_BASE };
             targetPrecision--;
@@ -898,7 +909,7 @@ namespace nfx::datatypes
         result.m_layout.flags = ( static_cast<std::uint32_t>( targetPrecision ) << constants::DECIMAL_SCALE_SHIFT );
 
         // Combine signs
-        if ( ( *this < Decimal{} ) != ( other < Decimal{} ) )
+        if( ( *this < Decimal{} ) != ( other < Decimal{} ) )
         {
             result.m_layout.flags |= constants::DECIMAL_SIGN_MASK;
         }
@@ -914,13 +925,13 @@ namespace nfx::datatypes
 
     Decimal Decimal::round( std::int32_t decimalsPlacesCount, RoundingMode mode ) const noexcept
     {
-        if ( decimalsPlacesCount < 0 )
+        if( decimalsPlacesCount < 0 )
         {
             decimalsPlacesCount = 0;
         }
 
         bool thisZero = m_layout.mantissa[0] == 0 && m_layout.mantissa[1] == 0 && m_layout.mantissa[2] == 0;
-        if ( decimalsPlacesCount >= static_cast<std::int32_t>( scale() ) || thisZero )
+        if( decimalsPlacesCount >= static_cast<std::int32_t>( scale() ) || thisZero )
         {
             return *this;
         }
@@ -933,10 +944,10 @@ namespace nfx::datatypes
         // Get the digit that determines rounding direction
         Int128 mantissa{ internal::mantissaAsInt128( *this ) };
         Int128 divisor{ 1 };
-        if ( digitsToRemove > 1U )
+        if( digitsToRemove > 1U )
         {
             std::uint8_t divisorPowers = static_cast<std::uint8_t>( digitsToRemove - 1U );
-            for ( std::uint8_t i{ 0 }; i < divisorPowers; ++i )
+            for( std::uint8_t i{ 0 }; i < divisorPowers; ++i )
             {
                 divisor = divisor * Int128{ constants::DECIMAL_BASE };
             }
@@ -945,23 +956,23 @@ namespace nfx::datatypes
         Int128 roundingDigit{ ( mantissa / divisor ) % Int128{ constants::DECIMAL_BASE } };
 
         // Perform truncation to target scale
-        for ( std::uint8_t i = 0; i < digitsToRemove; ++i )
+        for( std::uint8_t i = 0; i < digitsToRemove; ++i )
         {
             internal::divideByPowerOf10( result, 1U );
         }
 
-        result.m_layout.flags =
-            ( result.m_layout.flags & ~constants::DECIMAL_SCALE_MASK ) |
-            ( static_cast<std::uint32_t>( targetScale ) << constants::DECIMAL_SCALE_SHIFT );
+        result.m_layout.flags = ( result.m_layout.flags & ~constants::DECIMAL_SCALE_MASK ) |
+                                ( static_cast<std::uint32_t>( targetScale ) << constants::DECIMAL_SCALE_SHIFT );
 
         // Determine if we should round up based on the rounding mode
         bool shouldRoundUp{ false };
 
-        switch ( mode )
+        switch( mode )
         {
             case RoundingMode::ToNearest:
             {
-                shouldRoundUp = internal::shouldRoundUpToNearest( roundingDigit, mantissa, divisor, digitsToRemove, result );
+                shouldRoundUp =
+                    internal::shouldRoundUpToNearest( roundingDigit, mantissa, divisor, digitsToRemove, result );
                 break;
             }
             case RoundingMode::ToNearestTiesAway:
@@ -989,11 +1000,11 @@ namespace nfx::datatypes
         }
 
         // Apply rounding adjustment
-        if ( shouldRoundUp )
+        if( shouldRoundUp )
         {
             Int128 resultMantissa{ internal::mantissaAsInt128( result ) };
             bool thisNeg = ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0;
-            if ( thisNeg )
+            if( thisNeg )
             {
                 // For negative numbers, "rounding up" means increasing the absolute value (magnitude)
                 // Since mantissa is unsigned, we ADD to make the number more negative
@@ -1015,20 +1026,20 @@ namespace nfx::datatypes
     {
         // Check for negative input
         bool isNegative = ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0;
-        if ( isNegative )
+        if( isNegative )
         {
             throw std::domain_error( "Cannot compute square root of negative number" );
         }
 
         // Handle zero
-        if ( *this == 0 )
+        if( *this == 0 )
         {
             return Decimal{ 0 };
         }
 
         // Handle one
         Decimal one{ 1 };
-        if ( *this == one )
+        if( *this == one )
         {
             return one;
         }
@@ -1040,12 +1051,14 @@ namespace nfx::datatypes
         Int128 mantissaValue;
 
 #if NFX_DATATYPES_HAS_NATIVE_INT128
-        NFX_DATATYPES_NATIVE_INT128 nativeVal = static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[2] ) << constants::BITS_PER_UINT64 |
-                                                static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[1] ) << constants::BITS_PER_UINT32 |
-                                                static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[0] );
+        NFX_DATATYPES_NATIVE_INT128 nativeVal =
+            static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[2] ) << constants::BITS_PER_UINT64 |
+            static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[1] ) << constants::BITS_PER_UINT32 |
+            static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[0] );
         mantissaValue = Int128{ nativeVal };
 #else
-        std::uint64_t low = static_cast<std::uint64_t>( mantissaArray[1] ) << constants::BITS_PER_UINT32 | mantissaArray[0];
+        std::uint64_t low =
+            static_cast<std::uint64_t>( mantissaArray[1] ) << constants::BITS_PER_UINT32 | mantissaArray[0];
         std::uint64_t high = mantissaArray[2];
         mantissaValue = Int128{ low, high };
 #endif
@@ -1054,14 +1067,14 @@ namespace nfx::datatypes
         Int128 intSqrt = mantissaValue.isqrt();
         Int128 squared = intSqrt * intSqrt;
 
-        if ( squared == mantissaValue )
+        if( squared == mantissaValue )
         {
             // Mantissa is a perfect square
             // sqrt(mantissa * 10^-scale) = sqrt(mantissa) * 10^(-scale/2)
             // If scale is even, we get an exact result
             std::uint8_t currentScale = scale();
 
-            if ( currentScale % 2 == 0 )
+            if( currentScale % 2 == 0 )
             {
                 // Even scale - exact result
                 // Construct result directly with correct scale
@@ -1072,7 +1085,7 @@ namespace nfx::datatypes
 
                 // Decimal from Int128 has scale 0, we need to set it to targetScale
                 // This means we divide by 10^targetScale
-                if ( targetScale > 0 )
+                if( targetScale > 0 )
                 {
                     Decimal divisor{ internal::powerOf10( targetScale ) };
                     result = result / divisor;
@@ -1090,7 +1103,7 @@ namespace nfx::datatypes
         Decimal x{ guessApprox };
 
         // Ensure initial guess is at least 1 for very small numbers
-        if ( x < one )
+        if( x < one )
         {
             x = one;
         }
@@ -1102,7 +1115,7 @@ namespace nfx::datatypes
         // Iterate until convergence (just a few iterations to refine double precision to Decimal precision)
         Decimal xNew = x;
         Decimal xPrev = x;
-        for ( int i = 0; i < constants::DECIMAL_SQRT_MAX_ITERATIONS; ++i )
+        for( int i = 0; i < constants::DECIMAL_SQRT_MAX_ITERATIONS; ++i )
         {
             Decimal quotient = *this / x;
             Decimal sum = x + quotient;
@@ -1111,19 +1124,19 @@ namespace nfx::datatypes
             // Check convergence: if difference is tiny, we're done
             Decimal diff = ( xNew > x ) ? ( xNew - x ) : ( x - xNew );
 
-            if ( diff < epsilon )
+            if( diff < epsilon )
             {
                 return xNew;
             }
 
             // Check if xNew equals x (no progress being made)
-            if ( xNew == x )
+            if( xNew == x )
             {
                 return xNew;
             }
 
             // Check if we're oscillating between two values
-            if ( i > 0 && xNew == xPrev )
+            if( i > 0 && xNew == xPrev )
             {
                 // Oscillating - return the value closest to the true sqrt
                 // Since we're oscillating, both x and xNew are very close to the answer
@@ -1148,7 +1161,7 @@ namespace nfx::datatypes
         {
             result = Decimal{};
 
-            if ( str.empty() )
+            if( str.empty() )
             {
                 return false;
             }
@@ -1156,18 +1169,18 @@ namespace nfx::datatypes
             // Handle sign
             bool negative{ false };
             size_t pos{ 0 };
-            if ( str[0] == '-' )
+            if( str[0] == '-' )
             {
                 negative = true;
                 pos = 1;
             }
-            else if ( str[0] == '+' )
+            else if( str[0] == '+' )
             {
                 pos = 1;
             }
 
             // Check if we have at least one character after sign
-            if ( pos >= str.length() )
+            if( pos >= str.length() )
             {
                 return false;
             }
@@ -1177,12 +1190,12 @@ namespace nfx::datatypes
             std::uint8_t currentScale{ 0 };
             size_t decimalCount{ 0 };
 
-            for ( size_t i{ pos }; i < str.length(); ++i )
+            for( size_t i{ pos }; i < str.length(); ++i )
             {
-                if ( str[i] == '.' )
+                if( str[i] == '.' )
                 {
                     decimalCount++;
-                    if ( decimalCount > 1 )
+                    if( decimalCount > 1 )
                     {
                         return false;
                     }
@@ -1191,10 +1204,10 @@ namespace nfx::datatypes
                 }
             }
 
-            if ( decimalPos != std::string_view::npos )
+            if( decimalPos != std::string_view::npos )
             {
                 currentScale = static_cast<std::uint8_t>( str.length() - decimalPos - 1 );
-                if ( currentScale > constants::DECIMAL_MAXIMUM_PLACES )
+                if( currentScale > constants::DECIMAL_MAXIMUM_PLACES )
                 {
                     currentScale = constants::DECIMAL_MAXIMUM_PLACES;
                 }
@@ -1207,14 +1220,14 @@ namespace nfx::datatypes
             std::uint8_t significantDigits{ 0 };
             std::uint8_t decimalDigitsProcessed{ 0 };
 
-            for ( size_t i{ pos }; i < str.length(); ++i )
+            for( size_t i{ pos }; i < str.length(); ++i )
             {
-                if ( str[i] == '.' )
+                if( str[i] == '.' )
                 {
                     continue;
                 }
 
-                if ( str[i] < '0' || str[i] > '9' )
+                if( str[i] < '0' || str[i] > '9' )
                 {
                     // Invalid character
                     return false;
@@ -1224,10 +1237,10 @@ namespace nfx::datatypes
                 std::uint64_t digit{ static_cast<std::uint64_t>( str[i] - '0' ) };
 
                 // Decimal specification: maximum 28 significant digits
-                if ( significantDigits >= constants::DECIMAL_MAXIMUM_PLACES )
+                if( significantDigits >= constants::DECIMAL_MAXIMUM_PLACES )
                 {
                     // Truncate excess digits - adjust scale based on actual decimal digits processed
-                    if ( decimalPos != std::string_view::npos )
+                    if( decimalPos != std::string_view::npos )
                     {
                         currentScale = decimalDigitsProcessed;
                     }
@@ -1235,13 +1248,14 @@ namespace nfx::datatypes
                 }
 
                 // Count significant digits (skip leading zeros only before decimal point)
-                if ( digit != 0 || mantissaValue != Int128{ 0 } || ( decimalPos != std::string_view::npos && i > decimalPos ) )
+                if( digit != 0 || mantissaValue != Int128{ 0 } ||
+                    ( decimalPos != std::string_view::npos && i > decimalPos ) )
                 {
                     significantDigits++;
                 }
 
                 // Count decimal digits processed
-                if ( decimalPos != std::string_view::npos && i > decimalPos )
+                if( decimalPos != std::string_view::npos && i > decimalPos )
                 {
                     decimalDigitsProcessed++;
                 }
@@ -1251,30 +1265,30 @@ namespace nfx::datatypes
             }
 
             // Ensure we have at least one digit (prevents parsing ".", "+", "-", etc.)
-            if ( !hasDigits )
+            if( !hasDigits )
             {
                 return false;
             }
 
             // Check if mantissa fits in our 96-bit storage
-            if ( mantissaValue.toHigh() > constants::UINT32_MAX_VALUE )
+            if( mantissaValue.toHigh() > constants::UINT32_MAX_VALUE )
             {
                 // Value too large - truncate excess precision to fit
-                while ( mantissaValue.toHigh() > constants::UINT32_MAX_VALUE && currentScale > 0 )
+                while( mantissaValue.toHigh() > constants::UINT32_MAX_VALUE && currentScale > 0 )
                 {
                     mantissaValue = mantissaValue / Int128{ constants::DECIMAL_BASE };
                     --currentScale;
                 }
 
                 // If still too large after removing all decimal places, truncate the integer part to fit
-                while ( mantissaValue.toHigh() > constants::UINT32_MAX_VALUE )
+                while( mantissaValue.toHigh() > constants::UINT32_MAX_VALUE )
                 {
                     mantissaValue = mantissaValue / Int128{ constants::DECIMAL_BASE };
                 }
             }
 
             // Set result
-            if ( negative )
+            if( negative )
             {
                 result.m_layout.flags |= constants::DECIMAL_SIGN_MASK;
             }
@@ -1294,7 +1308,7 @@ namespace nfx::datatypes
 
             return true;
         }
-        catch ( ... )
+        catch( ... )
         {
             return false;
         }
@@ -1303,7 +1317,7 @@ namespace nfx::datatypes
     std::optional<Decimal> Decimal::fromString( std::string_view str ) noexcept
     {
         Decimal result;
-        if ( fromString( str, result ) )
+        if( fromString( str, result ) )
         {
             return result;
         }
@@ -1323,21 +1337,19 @@ namespace nfx::datatypes
         result = static_cast<double>( mantissa.toNative() );
 #else
         // Convert 128-bit to double (approximate)
-        result = static_cast<double>(
-                     mantissa.toHigh() ) *
-                     ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) *
+        result = static_cast<double>( mantissa.toHigh() ) * ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) *
                      ( constants::BIT_MASK_ONE << constants::BITS_PER_UINT32 ) +
                  static_cast<double>( mantissa.toLow() );
 #endif
         // Apply scale (using single division to avoid cumulative rounding errors)
         std::uint8_t currentScale = scale();
-        if ( currentScale > 0 )
+        if( currentScale > 0 )
         {
             result /= constants::DOUBLE_POWERS_OF_10[currentScale];
         }
 
         // Apply sign
-        if ( ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0 )
+        if( ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0 )
         {
             result = -result;
         }
@@ -1347,7 +1359,7 @@ namespace nfx::datatypes
 
     std::string Decimal::toString() const
     {
-        if ( m_layout.mantissa[0] == 0 && m_layout.mantissa[1] == 0 && m_layout.mantissa[2] == 0 )
+        if( m_layout.mantissa[0] == 0 && m_layout.mantissa[1] == 0 && m_layout.mantissa[2] == 0 )
         {
             return "0";
         }
@@ -1364,10 +1376,10 @@ namespace nfx::datatypes
 
 #if NFX_DATATYPES_HAS_NATIVE_INT128
         // Fast path for values that fit in 64-bit
-        if ( mantissa.toNative() <= UINT64_MAX )
+        if( mantissa.toNative() <= UINT64_MAX )
         {
             std::uint64_t value{ static_cast<std::uint64_t>( mantissa.toNative() ) };
-            while ( value > 0 && digitCount < digits.size() )
+            while( value > 0 && digitCount < digits.size() )
             {
                 digits[digitCount++] = static_cast<char>( '0' + ( value % constants::DECIMAL_BASE ) );
                 value /= constants::DECIMAL_BASE;
@@ -1376,19 +1388,18 @@ namespace nfx::datatypes
         else
         {
             // Full 128-bit extraction
-            while ( mantissa != 0 && digitCount < digits.size() )
+            while( mantissa != 0 && digitCount < digits.size() )
             {
-                digits[digitCount++] = static_cast<char>( '0' +
-                                                          ( mantissa.toNative() % constants::DECIMAL_BASE ) );
+                digits[digitCount++] = static_cast<char>( '0' + ( mantissa.toNative() % constants::DECIMAL_BASE ) );
                 mantissa = Int128{ mantissa.toNative() / constants::DECIMAL_BASE };
             }
         }
 #else
-        if ( mantissa.toHigh() == 0 )
+        if( mantissa.toHigh() == 0 )
         {
             // Fast 64-bit path
             std::uint64_t value{ mantissa.toLow() };
-            while ( value > 0 && digitCount < digits.size() )
+            while( value > 0 && digitCount < digits.size() )
             {
                 digits[digitCount++] = static_cast<char>( '0' + ( value % constants::DECIMAL_BASE ) );
                 value /= constants::DECIMAL_BASE;
@@ -1397,13 +1408,13 @@ namespace nfx::datatypes
         else
         {
             // Manual 128-bit extraction
-            while ( mantissa != Int128{} && digitCount < digits.size() )
+            while( mantissa != Int128{} && digitCount < digits.size() )
             {
-                if ( mantissa.toHigh() == 0 )
+                if( mantissa.toHigh() == 0 )
                 {
                     // Switched to 64-bit range
                     std::uint64_t value{ mantissa.toLow() };
-                    while ( value > 0 && digitCount < digits.size() )
+                    while( value > 0 && digitCount < digits.size() )
                     {
                         digits[digitCount++] = static_cast<char>( '0' + ( value % constants::DECIMAL_BASE ) );
                         value /= constants::DECIMAL_BASE;
@@ -1419,35 +1430,35 @@ namespace nfx::datatypes
         }
 #endif
 
-        if ( digitCount == 0 )
+        if( digitCount == 0 )
         {
             digitCount = 1;
             digits[0] = '0';
         }
 
         // Handle sign
-        if ( ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0 )
+        if( ( m_layout.flags & constants::DECIMAL_SIGN_MASK ) != 0 )
         {
             result.push_back( '-' );
         }
 
         // Apply decimal point formatting
-        if ( currentScale > 0 )
+        if( currentScale > 0 )
         {
-            if ( currentScale >= digitCount )
+            if( currentScale >= digitCount )
             {
                 // Need leading zeros: "0.00123"
                 result.push_back( '0' );
                 result.push_back( '.' );
 
                 // Add leading zeros
-                for ( size_t i = 0; i < currentScale - digitCount; ++i )
+                for( size_t i = 0; i < currentScale - digitCount; ++i )
                 {
                     result.push_back( '0' );
                 }
 
                 // Add digits in reverse order
-                for ( size_t i = digitCount; i > 0; --i )
+                for( size_t i = digitCount; i > 0; --i )
                 {
                     result.push_back( digits[i - 1] );
                 }
@@ -1455,7 +1466,7 @@ namespace nfx::datatypes
             else
             {
                 // Add integer part (reverse order)
-                for ( size_t i = digitCount; i > currentScale; --i )
+                for( size_t i = digitCount; i > currentScale; --i )
                 {
                     result.push_back( digits[i - 1] );
                 }
@@ -1463,7 +1474,7 @@ namespace nfx::datatypes
                 result.push_back( '.' );
 
                 // Add fractional part (reverse order)
-                for ( size_t i = currentScale; i > 0; --i )
+                for( size_t i = currentScale; i > 0; --i )
                 {
                     result.push_back( digits[i - 1] );
                 }
@@ -1472,7 +1483,7 @@ namespace nfx::datatypes
         else
         {
             // No decimal point, just add digits in reverse order
-            for ( size_t i = digitCount; i > 0; --i )
+            for( size_t i = digitCount; i > 0; --i )
             {
                 result.push_back( digits[i - 1] );
             }
@@ -1503,7 +1514,7 @@ namespace nfx::datatypes
     std::uint8_t Decimal::decimalPlacesCount() const noexcept
     {
         // If the value is zero, it has 0 decimal places
-        if ( m_layout.mantissa[0] == 0 && m_layout.mantissa[1] == 0 && m_layout.mantissa[2] == 0 )
+        if( m_layout.mantissa[0] == 0 && m_layout.mantissa[1] == 0 && m_layout.mantissa[2] == 0 )
         {
             return 0;
         }
@@ -1512,7 +1523,7 @@ namespace nfx::datatypes
         std::uint8_t currentScale = scale();
 
         // If scale is 0, it's an integer - no decimal places
-        if ( currentScale == 0 )
+        if( currentScale == 0 )
         {
             return 0;
         }
@@ -1520,12 +1531,15 @@ namespace nfx::datatypes
         // Convert mantissa to Int128 for proper arithmetic
         const auto& mantissaArray = mantissa();
 #if NFX_DATATYPES_HAS_NATIVE_INT128
-        NFX_DATATYPES_NATIVE_INT128 mantissaValue{ static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[2] ) << constants::BITS_PER_UINT64 |
-                                                   static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[1] ) << constants::BITS_PER_UINT32 |
+        NFX_DATATYPES_NATIVE_INT128 mantissaValue{ static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[2] )
+                                                       << constants::BITS_PER_UINT64 |
+                                                   static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[1] )
+                                                       << constants::BITS_PER_UINT32 |
                                                    static_cast<NFX_DATATYPES_NATIVE_INT128>( mantissaArray[0] ) };
         Int128 mantissa128{ mantissaValue };
 #else
-        std::uint64_t low{ static_cast<std::uint64_t>( mantissaArray[1] ) << constants::BITS_PER_UINT32 | mantissaArray[0] };
+        std::uint64_t low{ static_cast<std::uint64_t>( mantissaArray[1] ) << constants::BITS_PER_UINT32 |
+                           mantissaArray[0] };
         std::uint64_t high{ mantissaArray[2] };
         Int128 mantissa128{ low, high };
 #endif
@@ -1534,10 +1548,10 @@ namespace nfx::datatypes
         Int128 ten{ constants::DECIMAL_BASE };
 
         // Count trailing zeros by testing divisibility by 10 iteratively
-        while ( trailingZeros < currentScale )
+        while( trailingZeros < currentScale )
         {
             // If there's a remainder, we can't divide evenly by 10
-            if ( mantissa128 % ten != Int128{ 0 } )
+            if( mantissa128 % ten != Int128{ 0 } )
             {
                 break;
             }
@@ -1557,7 +1571,7 @@ namespace nfx::datatypes
     std::ostream& operator<<( std::ostream& os, const Decimal& decimal )
     {
         // Check if std::fixed is set with specific precision
-        if ( ( os.flags() & std::ios_base::fixed ) && os.precision() >= 0 )
+        if( ( os.flags() & std::ios_base::fixed ) && os.precision() >= 0 )
         {
             // Format with minimum decimal places based on stream precision
             std::string str{ decimal.toString() };
@@ -1565,11 +1579,11 @@ namespace nfx::datatypes
             // Find decimal point
             size_t dot_pos{ str.find( '.' ) };
 
-            if ( dot_pos == std::string::npos )
+            if( dot_pos == std::string::npos )
             {
                 // No decimal point - add it with required precision
                 str += '.';
-                for ( std::streamsize i = 0; i < os.precision(); ++i )
+                for( std::streamsize i = 0; i < os.precision(); ++i )
                 {
                     str += '0';
                 }
@@ -1578,9 +1592,9 @@ namespace nfx::datatypes
             {
                 // Has decimal point - pad to required precision
                 size_t current_decimals{ str.length() - dot_pos - 1 };
-                if ( static_cast<std::streamsize>( current_decimals ) < os.precision() )
+                if( static_cast<std::streamsize>( current_decimals ) < os.precision() )
                 {
-                    for ( std::streamsize i = static_cast<std::streamsize>( current_decimals ); i < os.precision(); ++i )
+                    for( std::streamsize i = static_cast<std::streamsize>( current_decimals ); i < os.precision(); ++i )
                     {
                         str += '0';
                     }
@@ -1599,7 +1613,7 @@ namespace nfx::datatypes
         std::string str;
         is >> str;
 
-        if ( !Decimal::fromString( str, decimal ) )
+        if( !Decimal::fromString( str, decimal ) )
         {
             is.setstate( std::ios::failbit );
         }

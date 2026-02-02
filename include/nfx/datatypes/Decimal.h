@@ -68,11 +68,13 @@
  *          =============================================
  *
  *          ┌─────────────────────────────────┬─────────────────────────────────┬─────────────────────────────────┬─────────────────────────────────┐
- *          │         mantissa[2]             │         mantissa[1]             │          mantissa[0]            │            flags                │
- *          │       (upper 32 bits)           │      (middle 32 bits)           │       (lower 32 bits)           │        (scale + sign)           │
- *          │          32 bits                │          32 bits                │           32 bits               │            32 bit               │
+ *          │         mantissa[2]             │         mantissa[1]             │          mantissa[0]            │
+ * flags                │ │       (upper 32 bits)           │      (middle 32 bits)           │       (lower 32 bits) │
+ * (scale + sign)           │ │          32 bits                │          32 bits                │           32 bits │
+ * 32 bit               │
  *          └─────────────────────────────────┴─────────────────────────────────┴─────────────────────────────────┴─────────────────────────────────┘
- *          Bit 127                     Bit 96 Bit 95                     Bit 64 Bit 63                     Bit 32 Bit 31                       Bit 0
+ *          Bit 127                     Bit 96 Bit 95                     Bit 64 Bit 63                     Bit 32 Bit
+ * 31                       Bit 0
  *
  *          Where the 96-bit mantissa represents an unsigned integer from 0 to 2^96-1
  *          and the sign is stored separately in bit 31 of the flags word.
@@ -768,7 +770,8 @@ namespace nfx::datatypes
          * @return Decimal value rounded to the specified precision
          * @note This function is marked [[nodiscard]] - the return value should not be ignored
          */
-        [[nodiscard]] Decimal round( std::int32_t decimalsPlacesCount = 0, RoundingMode mode = RoundingMode::ToNearest ) const noexcept;
+        [[nodiscard]] Decimal round(
+            std::int32_t decimalsPlacesCount = 0, RoundingMode mode = RoundingMode::ToNearest ) const noexcept;
 
         /**
          * @brief Compute square root using Newton-Raphson method
@@ -952,7 +955,9 @@ namespace nfx::datatypes
      *          Enables usage in generic algorithms.
      * @note This function is marked [[nodiscard]] - the return value should not be ignored
      */
-    [[nodiscard]] inline Decimal round( const Decimal& value, std::int32_t decimalsPlacesCount = 0,
+    [[nodiscard]] inline Decimal round(
+        const Decimal& value,
+        std::int32_t decimalsPlacesCount = 0,
         Decimal::RoundingMode mode = Decimal::RoundingMode::ToNearest ) noexcept
     {
         return value.round( decimalsPlacesCount, mode );

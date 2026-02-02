@@ -19,6 +19,7 @@ ZERO_CHECK.vcxproj*
 RUN_TESTS.vcxproj*
 TESTS_*.vcxproj*
 .qtcreator
+CMakeLists.txt.user
 
 # cpp build directory
 build/
@@ -88,4 +89,4 @@ coverage/
 # Project-specific build artifacts
 nfx-datatypes*/
 lib/
-tests/TESTS_*[1]_*
+TMP/

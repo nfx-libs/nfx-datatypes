@@ -11,6 +11,40 @@ if(NOT NFX_DATATYPES_BUILD_TESTS)
 endif()
 
 #----------------------------------------------
+# GoogleTest dependency
+#----------------------------------------------
+
+include(FetchContent)
+
+set(NFX_DATATYPES_DEPS_GOOGLETEST_VERSION "1.17.0")
+
+find_package(GTest ${NFX_DATATYPES_DEPS_GOOGLETEST_VERSION} QUIET)
+if(NOT GTest_FOUND)
+    set(_SAVED_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS           OFF CACHE BOOL  "Build shared libraries"     FORCE)
+
+    set(BUILD_GMOCK                 OFF CACHE BOOL "Build GMock"                 FORCE)
+    set(INSTALL_GTEST               OFF CACHE BOOL "Install GoogleTest"          FORCE)
+    set(GTEST_HAS_ABSL              OFF CACHE BOOL "Use Abseil library"          FORCE)
+    set(gtest_build_samples         OFF CACHE BOOL "Build samples"               FORCE)
+    set(gtest_build_tests           OFF CACHE BOOL "Build tests"                 FORCE)
+    set(gtest_disable_pthreads      OFF CACHE BOOL "Disable pthreads"            FORCE)
+    set(gtest_force_shared_crt      ON  CACHE BOOL "Force shared CRT on Windows" FORCE)
+    set(gtest_hide_internal_symbols OFF CACHE BOOL "Hide internal symbols"       FORCE)
+
+    FetchContent_Declare(
+        googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG        v${NFX_DATATYPES_DEPS_GOOGLETEST_VERSION}
+            GIT_SHALLOW    TRUE
+    )
+
+    set(BUILD_SHARED_LIBS ${_SAVED_BUILD_SHARED_LIBS} CACHE BOOL "Build shared libraries" FORCE)
+
+    FetchContent_MakeAvailable(googletest)
+endif()
+
+#----------------------------------------------
 # GoogleTest integration
 #----------------------------------------------
 

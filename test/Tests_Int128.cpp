@@ -756,7 +756,8 @@ namespace nfx::datatypes::test
         datatypes::Int128 squared{ isqrtValue * isqrtValue };
         EXPECT_TRUE( squared <= d12 );
         // And (result+1)^2 > original
-        datatypes::Int128 nextSquared{ ( isqrtValue + datatypes::Int128{ 1 } ) * ( isqrtValue + datatypes::Int128{ 1 } ) };
+        datatypes::Int128 nextSquared{ ( isqrtValue + datatypes::Int128{ 1 } ) *
+                                       ( isqrtValue + datatypes::Int128{ 1 } ) };
         EXPECT_TRUE( nextSquared > d12 );
 
         // Test that isqrt() throws for negative values
@@ -1663,7 +1664,8 @@ namespace nfx::datatypes::test
         // Test comparisons with numbers near the limits of floating-point precision
 
         // Large positive Int128
-        datatypes::Int128 large_positive{ static_cast<std::uint64_t>( 0x1FFFFFFFFFFFFFULL ) }; // Large but within double precision
+        datatypes::Int128 large_positive{ static_cast<std::uint64_t>(
+            0x1FFFFFFFFFFFFFULL ) }; // Large but within double precision
         double large_double = static_cast<double>( 0x1FFFFFFFFFFFFFULL );
         EXPECT_TRUE( large_positive == large_double );
 
@@ -2349,14 +2351,13 @@ namespace nfx::datatypes::test
 
     TEST( Int128Formatter, FormattingInContainer )
     {
-        std::vector<datatypes::Int128> values = {
-            datatypes::Int128( 1 ),
-            datatypes::Int128( 10 ),
-            datatypes::Int128( 100 ),
-            datatypes::Int128{ "1000000000000" } };
+        std::vector<datatypes::Int128> values = { datatypes::Int128( 1 ),
+                                                  datatypes::Int128( 10 ),
+                                                  datatypes::Int128( 100 ),
+                                                  datatypes::Int128{ "1000000000000" } };
 
         std::string result;
-        for ( const auto& val : values )
+        for( const auto& val : values )
         {
             result += std::format( "{} ", val );
         }

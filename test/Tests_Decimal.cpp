@@ -667,7 +667,9 @@ namespace nfx::datatypes::test
 
         // Test with rounding modes
         datatypes::Decimal value{ "2.5" };
-        EXPECT_EQ( round( value, 0, datatypes::Decimal::RoundingMode::ToNearest ), datatypes::Decimal{ "2" } ); // Banker's rounding
+        EXPECT_EQ(
+            round( value, 0, datatypes::Decimal::RoundingMode::ToNearest ),
+            datatypes::Decimal{ "2" } ); // Banker's rounding
         EXPECT_EQ( round( value, 0, datatypes::Decimal::RoundingMode::ToNearestTiesAway ), datatypes::Decimal{ "3" } );
     }
 
@@ -888,7 +890,7 @@ namespace nfx::datatypes::test
 
         // For 123.456, float and double typically have different precision errors,
         // but we verify this rather than assume it
-        if ( !std::equal_to<double>{}( static_cast<double>( imprecise_float ), imprecise_double ) )
+        if( !std::equal_to<double>{}( static_cast<double>( imprecise_float ), imprecise_double ) )
         {
             EXPECT_FALSE( d_from_float == d_from_double ); // Different precision sources
         }
@@ -1438,7 +1440,7 @@ namespace nfx::datatypes::test
         datatypes::Decimal accumulator{ "0" };
         datatypes::Decimal increment{ "0.001" };
 
-        for ( int i{ 0 }; i < 1000; ++i )
+        for( int i{ 0 }; i < 1000; ++i )
         {
             accumulator += increment;
         }
@@ -2227,23 +2229,34 @@ namespace nfx::datatypes::test
         // Banker's rounding (round-half-to-even)
         // Test positive values with different fractional parts
         EXPECT_EQ( Decimal( "2.4" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "2" );
-        EXPECT_EQ( Decimal( "2.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "2" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "2.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "2" ); // Tie: round to even
         EXPECT_EQ( Decimal( "2.6" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "3" );
-        EXPECT_EQ( Decimal( "3.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "4" ); // Tie: round to even
-        EXPECT_EQ( Decimal( "4.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "4" ); // Tie: round to even
-        EXPECT_EQ( Decimal( "5.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "6" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "3.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "4" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "4.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "4" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "5.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "6" ); // Tie: round to even
 
         // Test negative values
         EXPECT_EQ( Decimal( "-2.4" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-2" );
-        EXPECT_EQ( Decimal( "-2.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-2" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "-2.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-2" ); // Tie: round to even
         EXPECT_EQ( Decimal( "-2.6" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-3" );
-        EXPECT_EQ( Decimal( "-3.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-4" ); // Tie: round to even
-        EXPECT_EQ( Decimal( "-4.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-4" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "-3.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-4" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "-4.5" ).round( 0, Decimal::RoundingMode::ToNearest ).toString(), "-4" ); // Tie: round to even
 
         // Test with decimal places
         EXPECT_EQ( Decimal( "123.456" ).round( 2, Decimal::RoundingMode::ToNearest ).toString(), "123.46" );
-        EXPECT_EQ( Decimal( "123.455" ).round( 2, Decimal::RoundingMode::ToNearest ).toString(), "123.46" ); // Tie: round to even
-        EXPECT_EQ( Decimal( "123.445" ).round( 2, Decimal::RoundingMode::ToNearest ).toString(), "123.44" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "123.455" ).round( 2, Decimal::RoundingMode::ToNearest ).toString(),
+            "123.46" ); // Tie: round to even
+        EXPECT_EQ(
+            Decimal( "123.445" ).round( 2, Decimal::RoundingMode::ToNearest ).toString(),
+            "123.44" ); // Tie: round to even
         EXPECT_EQ( Decimal( "123.454" ).round( 2, Decimal::RoundingMode::ToNearest ).toString(), "123.45" );
 
         // Test non-tie cases (should always round away from zero when > 0.5)
@@ -2258,16 +2271,26 @@ namespace nfx::datatypes::test
         // Standard rounding (round-half-away-from-zero)
         // Test positive values
         EXPECT_EQ( Decimal( "2.4" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "2" );
-        EXPECT_EQ( Decimal( "2.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "3" ); // Tie: away from zero
+        EXPECT_EQ(
+            Decimal( "2.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(),
+            "3" ); // Tie: away from zero
         EXPECT_EQ( Decimal( "2.6" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "3" );
-        EXPECT_EQ( Decimal( "3.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "4" ); // Tie: away from zero
-        EXPECT_EQ( Decimal( "4.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "5" ); // Tie: away from zero
+        EXPECT_EQ(
+            Decimal( "3.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(),
+            "4" ); // Tie: away from zero
+        EXPECT_EQ(
+            Decimal( "4.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(),
+            "5" ); // Tie: away from zero
 
         // Test negative values (should round away from zero)
         EXPECT_EQ( Decimal( "-2.4" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "-2" );
-        EXPECT_EQ( Decimal( "-2.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "-3" ); // Tie: away from zero
+        EXPECT_EQ(
+            Decimal( "-2.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(),
+            "-3" ); // Tie: away from zero
         EXPECT_EQ( Decimal( "-2.6" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "-3" );
-        EXPECT_EQ( Decimal( "-3.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "-4" ); // Tie: away from zero
+        EXPECT_EQ(
+            Decimal( "-3.5" ).round( 0, Decimal::RoundingMode::ToNearestTiesAway ).toString(),
+            "-4" ); // Tie: away from zero
 
         // Test with decimal places
         EXPECT_EQ( Decimal( "123.455" ).round( 2, Decimal::RoundingMode::ToNearestTiesAway ).toString(), "123.46" );
@@ -2299,9 +2322,11 @@ namespace nfx::datatypes::test
         EXPECT_EQ( Decimal( "-123.459" ).round( 2, Decimal::RoundingMode::ToZero ).toString(), "-123.45" );
 
         // Verify equivalence with trunc( ) for integer rounding
-        EXPECT_EQ( Decimal( "123.789" ).round( 0, Decimal::RoundingMode::ToZero ).toString(),
+        EXPECT_EQ(
+            Decimal( "123.789" ).round( 0, Decimal::RoundingMode::ToZero ).toString(),
             Decimal( "123.789" ).trunc().toString() );
-        EXPECT_EQ( Decimal( "-123.789" ).round( 0, Decimal::RoundingMode::ToZero ).toString(),
+        EXPECT_EQ(
+            Decimal( "-123.789" ).round( 0, Decimal::RoundingMode::ToZero ).toString(),
             Decimal( "-123.789" ).trunc().toString() );
     }
 
@@ -2314,13 +2339,15 @@ namespace nfx::datatypes::test
         EXPECT_EQ( Decimal( "2.1" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "3" );
         EXPECT_EQ( Decimal( "2.5" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "3" );
         EXPECT_EQ( Decimal( "2.9" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "3" );
-        EXPECT_EQ( Decimal( "2.0" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "2" ); // Exact integer
+        EXPECT_EQ(
+            Decimal( "2.0" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "2" ); // Exact integer
 
         // Test negative values (round toward zero, which is toward +∞)
         EXPECT_EQ( Decimal( "-2.1" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "-2" );
         EXPECT_EQ( Decimal( "-2.5" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "-2" );
         EXPECT_EQ( Decimal( "-2.9" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "-2" );
-        EXPECT_EQ( Decimal( "-2.0" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "-2" ); // Exact integer
+        EXPECT_EQ(
+            Decimal( "-2.0" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "-2" ); // Exact integer
 
         // Test with decimal places
         EXPECT_EQ( Decimal( "123.451" ).round( 2, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "123.46" );
@@ -2329,9 +2356,11 @@ namespace nfx::datatypes::test
         EXPECT_EQ( Decimal( "-123.459" ).round( 2, Decimal::RoundingMode::ToPositiveInfinity ).toString(), "-123.45" );
 
         // Verify equivalence with ceil( ) for integer rounding
-        EXPECT_EQ( Decimal( "123.001" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(),
+        EXPECT_EQ(
+            Decimal( "123.001" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(),
             Decimal( "123.001" ).ceil().toString() );
-        EXPECT_EQ( Decimal( "-123.001" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(),
+        EXPECT_EQ(
+            Decimal( "-123.001" ).round( 0, Decimal::RoundingMode::ToPositiveInfinity ).toString(),
             Decimal( "-123.001" ).ceil().toString() );
     }
 
@@ -2344,13 +2373,15 @@ namespace nfx::datatypes::test
         EXPECT_EQ( Decimal( "2.1" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "2" );
         EXPECT_EQ( Decimal( "2.5" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "2" );
         EXPECT_EQ( Decimal( "2.9" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "2" );
-        EXPECT_EQ( Decimal( "2.0" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "2" ); // Exact integer
+        EXPECT_EQ(
+            Decimal( "2.0" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "2" ); // Exact integer
 
         // Test negative values (round down, away from zero)
         EXPECT_EQ( Decimal( "-2.1" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "-3" );
         EXPECT_EQ( Decimal( "-2.5" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "-3" );
         EXPECT_EQ( Decimal( "-2.9" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "-3" );
-        EXPECT_EQ( Decimal( "-2.0" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "-2" ); // Exact integer
+        EXPECT_EQ(
+            Decimal( "-2.0" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "-2" ); // Exact integer
 
         // Test with decimal places
         EXPECT_EQ( Decimal( "123.451" ).round( 2, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "123.45" );
@@ -2359,9 +2390,11 @@ namespace nfx::datatypes::test
         EXPECT_EQ( Decimal( "-123.459" ).round( 2, Decimal::RoundingMode::ToNegativeInfinity ).toString(), "-123.46" );
 
         // Verify equivalence with floor() for integer rounding
-        EXPECT_EQ( Decimal( "123.789" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(),
+        EXPECT_EQ(
+            Decimal( "123.789" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(),
             Decimal( "123.789" ).floor().toString() );
-        EXPECT_EQ( Decimal( "-123.789" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(),
+        EXPECT_EQ(
+            Decimal( "-123.789" ).round( 0, Decimal::RoundingMode::ToNegativeInfinity ).toString(),
             Decimal( "-123.789" ).floor().toString() );
     }
 
@@ -2792,13 +2825,12 @@ namespace nfx::datatypes::test
 
     TEST( DecimalFormatter, FormattingInContainer )
     {
-        std::vector<datatypes::Decimal> values = {
-            datatypes::Decimal{ "10.50" },
-            datatypes::Decimal{ "20.75" },
-            datatypes::Decimal{ "30.25" } };
+        std::vector<datatypes::Decimal> values = { datatypes::Decimal{ "10.50" },
+                                                   datatypes::Decimal{ "20.75" },
+                                                   datatypes::Decimal{ "30.25" } };
 
         std::string result;
-        for ( const auto& val : values )
+        for( const auto& val : values )
         {
             result += std::format( "{} ", val );
         }
@@ -2850,7 +2882,7 @@ namespace nfx::datatypes::test
             // If we get here, the operation succeeded
             EXPECT_FALSE( result == 0 );
         }
-        catch ( const std::exception& )
+        catch( const std::exception& )
         {
             // Throwing on overflow is acceptable behavior
             SUCCEED();
@@ -2872,7 +2904,7 @@ namespace nfx::datatypes::test
 
         // Test strings that are too long - should be truncated
         std::string tooLong{ "1." };
-        for ( int i{ 0 }; i < 50; ++i )
+        for( int i{ 0 }; i < 50; ++i )
         {
             tooLong += "1";
         }

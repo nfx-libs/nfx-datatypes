@@ -11,7 +11,6 @@ if(NOT NFX_DATATYPES_PACKAGE_SOURCE
         AND NOT NFX_DATATYPES_PACKAGE_DEB
         AND NOT NFX_DATATYPES_PACKAGE_RPM
         AND NOT NFX_DATATYPES_PACKAGE_WIX)
-    message(STATUS "Packaging disabled (all options OFF), skipping...")
     return()
 endif()
 
@@ -106,7 +105,7 @@ endif()
 # --- Generators ---
 if(NOT DEFINED CPACK_GENERATOR)
     set(CPACK_GENERATOR "")
-    
+
     # --- Archive packages ---
     if(NFX_DATATYPES_PACKAGE_ARCHIVE)
         if(UNIX AND NOT APPLE)
@@ -115,7 +114,7 @@ if(NOT DEFINED CPACK_GENERATOR)
             set(CPACK_GENERATOR "ZIP")
         endif()
     endif()
-    
+
     # --- DEB packages ---
     if(NFX_DATATYPES_PACKAGE_DEB AND UNIX AND NOT APPLE)
         if(DPKG_CMD)
@@ -124,7 +123,7 @@ if(NOT DEFINED CPACK_GENERATOR)
             message(STATUS "DEB packaging disabled - install dpkg-dev for .deb support")
         endif()
     endif()
-    
+
     # --- RPM packages ---
     if(NFX_DATATYPES_PACKAGE_RPM AND UNIX AND NOT APPLE)
         if(RPM_CMD)
@@ -133,7 +132,7 @@ if(NOT DEFINED CPACK_GENERATOR)
             message(STATUS "RPM packaging disabled - install rpm for .rpm support")
         endif()
     endif()
-    
+
     # --- WiX packages ---
     if(NFX_DATATYPES_PACKAGE_WIX AND WIN32)
         if(WIX_CANDLE AND WIX_LIGHT)
@@ -143,7 +142,7 @@ if(NOT DEFINED CPACK_GENERATOR)
             message(STATUS "WiX not found - install WiX Toolset and ensure WIX environment variable is set")
         endif()
     endif()
-    
+
     # Clean up leading semicolon
     string(REGEX REPLACE "^;" "" CPACK_GENERATOR "${CPACK_GENERATOR}")
 endif()
@@ -166,7 +165,7 @@ if("DEB" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
             set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${detected_deb_arch}")
         endif()
     endif()
-    
+
     message(STATUS "Debian package architecture: ${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
 endif()
 
@@ -178,7 +177,7 @@ if("RPM" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
             ERROR_QUIET)
         set(CPACK_RPM_PACKAGE_ARCHITECTURE "${detected_rpm_arch}")
     endif()
-    
+
     message(STATUS "RPM package architecture: ${CPACK_RPM_PACKAGE_ARCHITECTURE}")
 endif()
 
@@ -194,7 +193,7 @@ if("DEB" IN_LIST CPACK_GENERATOR AND UNIX AND NOT APPLE)
     set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${CPACK_DEBIAN_PACKAGE_ARCHITECTURE})
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER   ${CPACK_PACKAGE_VENDOR})
     set(CPACK_DEBIAN_PACKAGE_DESCRIPTION  ${PROJECT_DESCRIPTION})
-    set(CPACK_DEBIAN_PACKAGE_SECTION      "libs") 
+    set(CPACK_DEBIAN_PACKAGE_SECTION      "libs")
     set(CPACK_DEBIAN_COMPRESSION_TYPE     "xz")
     set(CPACK_DEBIAN_PACKAGE_PRIORITY     "optional")
     set(CPACK_DEBIAN_PACKAGE_HOMEPAGE     ${CPACK_PACKAGE_HOMEPAGE_URL})

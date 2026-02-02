@@ -153,7 +153,8 @@ int main()
         std::cout << "Periods: " << totalPeriods << "\n";
         std::cout << "Base: " << base << "\n";
 
-        std::cout << "Note: full exponentiation using Decimal is left as an exercise; this demonstrates precision-friendly steps.\n";
+        std::cout << "Note: full exponentiation using Decimal is left as an exercise; this demonstrates "
+                     "precision-friendly steps.\n";
         std::cout << "\n";
     }
 
@@ -166,7 +167,7 @@ int main()
 
         Int128 factN{ 20 };
         Int128 fact{ 1 };
-        for ( Int128 i{ 1 }; i <= factN; i = i + Int128{ 1 } )
+        for( Int128 i{ 1 }; i <= factN; i = i + Int128{ 1 } )
             fact = fact * i;
         std::cout << "20! = " << fact << "\n";
 
@@ -174,7 +175,7 @@ int main()
         std::cout << "Fibonacci (first 15):\n";
         std::cout << "F(0) = " << f0 << "\n";
         std::cout << "F(1) = " << f1 << "\n";
-        for ( int i = 2; i < 15; ++i )
+        for( int i = 2; i < 15; ++i )
         {
             auto next = f0 + f1;
             std::cout << "F(" << i << ") = " << next << "\n";
@@ -335,7 +336,7 @@ int main()
             std::cout << "Int128 (too large): " << tooLarge << "\n";
             std::cout << "Converted to Decimal: " << overflowed << "\n";
         }
-        catch ( const std::overflow_error& e )
+        catch( const std::overflow_error& e )
         {
             std::cout << "Int128 (too large): " << tooLarge << "\n";
             std::cout << "Overflow exception: " << e.what() << "\n";

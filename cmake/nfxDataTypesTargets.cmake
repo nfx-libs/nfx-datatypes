@@ -14,9 +14,10 @@ if(NFX_DATATYPES_BUILD_SHARED)
             ${private_sources}
     )
 
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     )
 
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -30,9 +31,10 @@ if(NFX_DATATYPES_BUILD_STATIC)
             ${private_sources}
     )
 
-    set_target_properties(${PROJECT_NAME}-static PROPERTIES
-        OUTPUT_NAME ${PROJECT_NAME}-static-${PROJECT_VERSION}
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    set_target_properties(${PROJECT_NAME}-static
+        PROPERTIES
+            OUTPUT_NAME ${PROJECT_NAME}-static-${PROJECT_VERSION}
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     )
 
     add_library(${PROJECT_NAME}::static ALIAS ${PROJECT_NAME}-static)
@@ -58,10 +60,10 @@ function(configure_target target_name)
             CXX_STANDARD 20
             CXX_STANDARD_REQUIRED ON
             CXX_EXTENSIONS OFF
+            DEBUG_POSTFIX "-d"
             VERSION ${PROJECT_VERSION}
             SOVERSION ${PROJECT_VERSION_MAJOR}
             POSITION_INDEPENDENT_CODE ON
-            DEBUG_POSTFIX "-d"
     )
 endfunction()
 

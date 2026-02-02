@@ -1,13 +1,30 @@
 # EditorConfig is awesome: https://EditorConfig.org
 
-# C++ specific settings
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
 [*.{cpp,hpp,h,cc,cxx,inl}]
 indent_style = space
 indent_size = 4
-end_of_line = lf
 
-# CMake files
 [{CMakeLists.txt,*.cmake}]
 indent_style = space
 indent_size = 4
-end_of_line = lf
+
+[*.md]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = false
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.json]
+indent_style = space
+indent_size = 4

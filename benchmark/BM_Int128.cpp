@@ -44,7 +44,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructDefault( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{};
             ::benchmark::DoNotOptimize( value );
@@ -53,7 +53,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructFromInt32( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ 42 };
             ::benchmark::DoNotOptimize( value );
@@ -62,7 +62,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructFromInt64( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ static_cast<std::int64_t>( 1234567890123456789LL ) };
             ::benchmark::DoNotOptimize( value );
@@ -71,7 +71,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructFromUint64( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ static_cast<std::uint64_t>( 9876543210987654321ULL ) };
             ::benchmark::DoNotOptimize( value );
@@ -80,7 +80,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructFromTwoWords( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ 0xEBC2CE4F3C95D6F5ULL, 0x0173DC35270122E8ULL };
             ::benchmark::DoNotOptimize( value );
@@ -89,7 +89,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructFromFloat( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ 123456.789f };
             ::benchmark::DoNotOptimize( value );
@@ -98,7 +98,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ConstructFromDouble( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ 123456789012345.678 };
             ::benchmark::DoNotOptimize( value );
@@ -108,7 +108,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ConstructFromDecimal( ::benchmark::State& state )
     {
         Decimal decimal{ 23456789 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ decimal };
             ::benchmark::DoNotOptimize( value );
@@ -118,7 +118,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128CopyConstruct( ::benchmark::State& state )
     {
         Int128 original{ 0xEBC2CE4F3C95D6F5ULL, 0x0173DC35270122E8ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 value{ original };
             ::benchmark::DoNotOptimize( value );
@@ -133,7 +133,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 b{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a + b };
             ::benchmark::DoNotOptimize( result );
@@ -144,7 +144,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
         Int128 b{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a - b };
             ::benchmark::DoNotOptimize( result );
@@ -155,7 +155,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ static_cast<std::int64_t>( 123456789012345LL ) };
         Int128 b{ static_cast<std::int64_t>( 987654321098765LL ) };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a * b };
             ::benchmark::DoNotOptimize( result );
@@ -166,7 +166,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 b{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a * b };
             ::benchmark::DoNotOptimize( result );
@@ -177,7 +177,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
         Int128 b{ static_cast<std::int64_t>( 123456789LL ) };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a / b };
             ::benchmark::DoNotOptimize( result );
@@ -188,7 +188,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
         Int128 b{ 0x1234567890ABCDEFULL, 0x0000000000000001ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a / b };
             ::benchmark::DoNotOptimize( result );
@@ -199,7 +199,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
         Int128 b{ static_cast<std::int64_t>( 123456789LL ) };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ a % b };
             ::benchmark::DoNotOptimize( result );
@@ -209,7 +209,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128UnaryMinus( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ -value };
             ::benchmark::DoNotOptimize( result );
@@ -222,7 +222,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ParseSmallNumber( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             auto result{ Int128{ "42" } };
             ::benchmark::DoNotOptimize( result );
@@ -231,7 +231,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ParseMediumNumber( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             auto result{ Int128{ "123456789012345678" } };
             ::benchmark::DoNotOptimize( result );
@@ -240,7 +240,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ParseLargeNumber( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             auto result{ Int128{ "123456789012345678901234567890123456789" } };
             ::benchmark::DoNotOptimize( result );
@@ -249,7 +249,7 @@ namespace nfx::datatypes::benchmark
 
     static void BM_Int128ParseNegativeNumber( ::benchmark::State& state )
     {
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             auto result{ Int128{ "-987654321098765432109876543210" } };
             ::benchmark::DoNotOptimize( result );
@@ -259,7 +259,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128FromStringValid( ::benchmark::State& state )
     {
         Int128 result{};
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool success{ Int128::fromString( "123456789012345678901234567890", result ) };
             ::benchmark::DoNotOptimize( success );
@@ -270,7 +270,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128FromStringInValid( ::benchmark::State& state )
     {
         Int128 result{};
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool success{ Int128::fromString( "not_a_number", result ) };
             ::benchmark::DoNotOptimize( success );
@@ -285,7 +285,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToLow( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::uint64_t result{ value.toLow() };
             ::benchmark::DoNotOptimize( result );
@@ -295,7 +295,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToHigh( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::uint64_t result{ value.toHigh() };
             ::benchmark::DoNotOptimize( result );
@@ -305,7 +305,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToBits( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             auto result{ value.toBits() };
             ::benchmark::DoNotOptimize( result );
@@ -316,7 +316,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToNative( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             NFX_DATATYPES_NATIVE_INT128 result{ value.toNative() };
             ::benchmark::DoNotOptimize( result );
@@ -332,7 +332,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToStringSmall( ::benchmark::State& state )
     {
         Int128 value{ 42 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::string result{ value.toString() };
             ::benchmark::DoNotOptimize( result );
@@ -342,7 +342,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToStringMedium( ::benchmark::State& state )
     {
         Int128 value{ static_cast<std::int64_t>( 1234567890123456789LL ) };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::string result{ value.toString() };
             ::benchmark::DoNotOptimize( result );
@@ -352,7 +352,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128ToStringLarge( ::benchmark::State& state )
     {
         Int128 value{ 0xEBC2CE4F3C95D6F5ULL, 0x0173DC35270122E8ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::string result{ value.toString() };
             ::benchmark::DoNotOptimize( result );
@@ -363,7 +363,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 value{ 0xEBC2CE4F3C95D6F5ULL, 0x0173DC35270122E8ULL };
         Int128 negative{ -value };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::string result{ negative.toString() };
             ::benchmark::DoNotOptimize( result );
@@ -378,7 +378,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 b{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a == b };
             ::benchmark::DoNotOptimize( result );
@@ -389,7 +389,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 b{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a < b };
             ::benchmark::DoNotOptimize( result );
@@ -400,7 +400,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 0xFEDCBA0987654321ULL, 0x0000000087654321ULL };
         Int128 b{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a > b };
             ::benchmark::DoNotOptimize( result );
@@ -411,7 +411,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ static_cast<std::int64_t>( 1234567890123456789LL ) };
         std::int64_t b{ 1234567890123456789LL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a == b };
             ::benchmark::DoNotOptimize( result );
@@ -422,7 +422,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ static_cast<std::int64_t>( 1234567890123456789LL ) };
         std::int64_t b{ 8765432109876543210LL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a < b };
             ::benchmark::DoNotOptimize( result );
@@ -433,7 +433,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ static_cast<std::uint64_t>( 9876543210987654321ULL ) };
         std::uint64_t b{ 9876543210987654321ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a == b };
             ::benchmark::DoNotOptimize( result );
@@ -444,7 +444,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ static_cast<std::int64_t>( 123456789012345LL ) };
         double b{ 123456789012345.0 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a == b };
             ::benchmark::DoNotOptimize( result );
@@ -455,7 +455,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ static_cast<std::int64_t>( 123456789012345LL ) };
         double b{ 987654321098765.0 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a < b };
             ::benchmark::DoNotOptimize( result );
@@ -466,7 +466,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 123456 };
         float b{ 123456.0f };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a == b };
             ::benchmark::DoNotOptimize( result );
@@ -477,7 +477,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 123456789 };
         Decimal b{ 123456789 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a == b };
             ::benchmark::DoNotOptimize( result );
@@ -488,7 +488,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 a{ 123456789 };
         Decimal b{ 987654321 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ a < b };
             ::benchmark::DoNotOptimize( result );
@@ -502,7 +502,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsZero( ::benchmark::State& state )
     {
         Int128 value{ 0 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ value == 0 };
             ::benchmark::DoNotOptimize( result );
@@ -512,7 +512,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsZeroNonZero( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ value == 0 };
             ::benchmark::DoNotOptimize( result );
@@ -522,7 +522,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsNegative( ::benchmark::State& state )
     {
         Int128 value{ static_cast<std::int64_t>( -123456789LL ) };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ value < 0 };
             ::benchmark::DoNotOptimize( result );
@@ -532,7 +532,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsNegativePositive( ::benchmark::State& state )
     {
         Int128 value{ static_cast<std::int64_t>( 123456789LL ) };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             bool result{ value < 0 };
             ::benchmark::DoNotOptimize( result );
@@ -546,7 +546,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128AbsPositive( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ value.abs() };
             ::benchmark::DoNotOptimize( result );
@@ -557,7 +557,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 negative{ -value };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ negative.abs() };
             ::benchmark::DoNotOptimize( result );
@@ -567,7 +567,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128Isqrt( ::benchmark::State& state )
     {
         Int128 value{ 1000000 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ value.isqrt() };
             ::benchmark::DoNotOptimize( result );
@@ -577,7 +577,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsqrtLarge( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000000001234ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ value.isqrt() };
             ::benchmark::DoNotOptimize( result );
@@ -587,7 +587,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsqrtPerfectSquare( ::benchmark::State& state )
     {
         Int128 value{ 10000 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ value.isqrt() };
             ::benchmark::DoNotOptimize( result );
@@ -601,7 +601,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128AbsFreeFunctionPositive( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ abs( value ) };
             ::benchmark::DoNotOptimize( result );
@@ -612,7 +612,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 negative{ -value };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ abs( negative ) };
             ::benchmark::DoNotOptimize( result );
@@ -622,7 +622,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128IsqrtFreeFunction( ::benchmark::State& state )
     {
         Int128 value{ 1000000 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Int128 result{ isqrt( value ) };
             ::benchmark::DoNotOptimize( result );
@@ -632,7 +632,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128SqrtFreeFunction( ::benchmark::State& state )
     {
         Int128 value{ 1000000 };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             Decimal result{ sqrt( value ) };
             ::benchmark::DoNotOptimize( result );
@@ -646,7 +646,7 @@ namespace nfx::datatypes::benchmark
     static void BM_Int128Format( ::benchmark::State& state )
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::string result{ std::format( "{}", value ) };
             ::benchmark::DoNotOptimize( result );
@@ -657,7 +657,7 @@ namespace nfx::datatypes::benchmark
     {
         Int128 value{ 0x1234567890ABCDEFULL, 0x0000000012345678ULL };
         Int128 negative{ -value };
-        for ( auto _ : state )
+        for( auto _ : state )
         {
             std::string result{ std::format( "{}", negative ) };
             ::benchmark::DoNotOptimize( result );
