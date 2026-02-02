@@ -11,6 +11,8 @@
 - Updated Google Benchmark dependency from 1.9.4 to 1.9.5
 - Optimized `Int128::toString()` with platform-specific fast paths and pre-allocated digit buffer
 - Optimized `Int128(const Decimal&)` constructor using power-of-10 lookup tables instead of iterative multiplication
+- MSVC: Optimized `Int128::operator/` with `_udiv128` hardware intrinsic for 128/64-bit division
+- MSVC: Optimized binary long division algorithm with `_BitScanReverse64` to reduce loop iterations
 
 ### Deprecated
 

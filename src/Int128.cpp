@@ -28,17 +28,21 @@
  * @details Provides exact 128-bit integer arithmetic with portable operations
  */
 
+#include "nfx/datatypes/Int128.h"
+
+#include "nfx/datatypes/Decimal.h"
+#include "nfx/detail/datatypes/Constants.h"
+
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 #include <istream>
 #include <ostream>
 #include <sstream>
 #include <iomanip>
 #include <cmath>
 #include <limits>
-
-#include "nfx/datatypes/Int128.h"
-
-#include "nfx/datatypes/Decimal.h"
-#include "nfx/detail/datatypes/Constants.h"
 
 namespace nfx::datatypes
 {
@@ -310,7 +314,18 @@ namespace nfx::datatypes
         if( other.m_layout.upper64bits == 0 )
         {
             std::uint64_t divisor{ other.m_layout.lower64bits };
-
+#ifdef _MSC_VER
+            // MSVC optimization: Use hardware intrinsic for 128/64 division
+            // BUT ONLY if the quotient will fit in 64 bits (to avoid CPU exception)
+            // The quotient fits in 64 bits if: upper64bits < divisor
+            if( m_layout.upper64bits < divisor )
+            {
+                std::uint64_t remainder;
+                std::uint64_t lowQuotient = _udiv128( m_layout.upper64bits, m_layout.lower64bits, divisor, &remainder );
+                return Int128{ lowQuotient, 0 };
+            }
+            // else: quotient doesn't fit in 64 bits, fall through to manual algorithm
+#endif
             // Divide high part first
             std::uint64_t highQuotient{ m_layout.upper64bits / divisor };
             std::uint64_t highRemainder{ m_layout.upper64bits % divisor };
@@ -388,12 +403,34 @@ namespace nfx::datatypes
             return resultNegative ? Int128{ 0, 0 } - Int128{ 1, 0 } : Int128{ 1, 0 };
         }
 
+#ifdef _MSC_VER
+        // MSVC optimization: Find the highest set bit to reduce loop iterations
+        // Start from the most significant bit that's actually set
+        int startBit = constants::INT128_MAX_BIT_INDEX;
+
+        // Find the highest bit set in dividend using intrinsics
+        if( absDividend.m_layout.upper64bits != 0 )
+        {
+            unsigned long index;
+            _BitScanReverse64( &index, absDividend.m_layout.upper64bits );
+            startBit = static_cast<int>( index ) + constants::BITS_PER_UINT64;
+        }
+        else
+        {
+            unsigned long index;
+            _BitScanReverse64( &index, absDividend.m_layout.lower64bits );
+            startBit = static_cast<int>( index );
+        }
+#else
+        int startBit = constants::INT128_MAX_BIT_INDEX;
+#endif
         // Binary long division algorithm
         Int128 quotient{ 0, 0 };
         Int128 remainder{ 0, 0 };
 
         // Process bits from most significant to least significant
-        for( int i{ constants::INT128_MAX_BIT_INDEX }; i >= 0; --i )
+        // MSVC: Now starting from the actual highest bit instead of always from bit 127
+        for( int i{ startBit }; i >= 0; --i )
         {
             // Shift remainder left by 1
             remainder = remainder + remainder; // equivalent to << 1
