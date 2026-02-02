@@ -16,7 +16,7 @@ endif()
 
 include(FetchContent)
 
-set(NFX_DATATYPES_DEPS_BENCHMARK_VERSION "1.9.4")
+set(NFX_DATATYPES_DEPS_BENCHMARK_VERSION "1.9.5")
 
 find_package(benchmark ${NFX_DATATYPES_DEPS_BENCHMARK_VERSION} QUIET)
 if(NOT benchmark_FOUND)

@@ -8,7 +8,7 @@
 
 ### Changed
 
-- NIL
+- Updated Google Benchmark dependency from 1.9.4 to 1.9.5
 
 ### Deprecated
 
