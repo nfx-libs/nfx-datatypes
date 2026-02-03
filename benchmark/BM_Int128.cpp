@@ -261,6 +261,18 @@ namespace nfx::datatypes::benchmark
         Int128 result{};
         for( auto _ : state )
         {
+            // Use a medium-sized number that fits in the fast-path (≤20 digits)
+            bool success{ Int128::fromString( "9876543210987654321", result ) }; // 19 digits
+            ::benchmark::DoNotOptimize( success );
+            ::benchmark::DoNotOptimize( result );
+        }
+    }
+
+    static void BM_Int128FromStringValidLong( ::benchmark::State& state )
+    {
+        Int128 result{};
+        for( auto _ : state )
+        {
             bool success{ Int128::fromString( "123456789012345678901234567890", result ) };
             ::benchmark::DoNotOptimize( success );
             ::benchmark::DoNotOptimize( result );
@@ -704,6 +716,7 @@ namespace nfx::datatypes::benchmark
     BENCHMARK( BM_Int128ParseLargeNumber );
     BENCHMARK( BM_Int128ParseNegativeNumber );
     BENCHMARK( BM_Int128FromStringValid );
+    BENCHMARK( BM_Int128FromStringValidLong );
     BENCHMARK( BM_Int128FromStringInValid );
 
     //----------------------------------------------

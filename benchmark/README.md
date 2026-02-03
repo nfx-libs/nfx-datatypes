@@ -23,8 +23,11 @@
 
 | Platform    | OS         | Benchmark Framework     | C++ Compiler           | nfx-datatypes Version |
 | ----------- | ---------- | ----------------------- | ---------------------- | --------------------- |
-| **Linux**   | LMDE 7     | Google Benchmark v1.9.5 | Clang 19.1.7-x64       | v0.2.0                |
-| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MSVC 19.44.35217.0-x64 | v0.2.0                |
+| **Linux**   | LMDE 7     | Google Benchmark v1.9.5 | GCC 14.2.0-x64         | v0.3.0                |
+| **Linux**   | LMDE 7     | Google Benchmark v1.9.5 | Clang 19.1.7-x64       | v0.3.0                |
+| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MinGW GCC 14.2.0-x64   | v0.3.0                |
+| **Windows** | Windows 10 | Google Benchmark v1.9.5 | MSVC 19.44.35217.0-x64 | v0.3.0                |
+
 
 ---
 
@@ -34,123 +37,123 @@
 
 ### Construction Benchmarks
 
-| Operation                 | Linux Clang | Windows MSVC |
-| ------------------------- | ----------: | -----------: |
-| **Construct Default**     |    0.238 ns |     0.777 ns |
-| **Construct from Int32**  |    0.292 ns |     0.967 ns |
-| **Construct from Int64**  |    0.228 ns |     0.976 ns |
-| **Construct from Uint32** |    0.229 ns |     0.978 ns |
-| **Construct from Uint64** |    0.235 ns |     0.974 ns |
-| **Construct from Float**  |     57.6 ns |      55.5 ns |
-| **Construct from Double** |     68.8 ns |      64.0 ns |
-| **Construct from Int128** |     1.86 ns |      1.79 ns |
-| **Copy Construct**        |    0.242 ns |     0.761 ns |
+| Operation                 | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Construct Default**     |  0.220 ns |    0.221 ns |          0.229 ns |     0.767 ns |
+| **Construct from Int32**  |  0.226 ns |    0.277 ns |          0.225 ns |     0.963 ns |
+| **Construct from Int64**  |  0.228 ns |    0.226 ns |          0.229 ns |     0.942 ns |
+| **Construct from Uint32** |  0.239 ns |    0.225 ns |          0.246 ns |     0.942 ns |
+| **Construct from Uint64** |  0.241 ns |    0.226 ns |          0.225 ns |     0.963 ns |
+| **Construct from Float**  |   66.2 ns |     52.3 ns |           82.0 ns |      54.4 ns |
+| **Construct from Double** |   82.3 ns |     61.5 ns |           92.1 ns |      64.2 ns |
+| **Construct from Int128** |   1.32 ns |     1.72 ns |           1.31 ns |      1.88 ns |
+| **Copy Construct**        |  0.235 ns |    0.232 ns |          0.235 ns |     0.767 ns |
 
 ### Arithmetic Operations
 
-| Operation                     | Linux Clang | Windows MSVC |
-| ----------------------------- | ----------: | -----------: |
-| **Addition**                  |     53.8 ns |      83.5 ns |
-| **Subtraction**               |     35.4 ns |      52.1 ns |
-| **Multiplication**            |     43.3 ns |      54.4 ns |
-| **Multiplication Large**      |     43.6 ns |       123 ns |
-| **Division**                  |      142 ns |       277 ns |
-| **Division High Precision**   |      122 ns |       222 ns |
-| **Unary Minus**               |    0.246 ns |     0.771 ns |
-| **Addition Assignment**       |     52.3 ns |      72.6 ns |
-| **Subtraction Assignment**    |     36.0 ns |      54.7 ns |
-| **Multiplication Assignment** |     43.8 ns |      55.5 ns |
-| **Division Assignment**       |      137 ns |       285 ns |
+| Operation                     | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ----------------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Addition**                  |   38.1 ns |     51.8 ns |           33.7 ns |      82.0 ns |
+| **Subtraction**               |   27.8 ns |     34.2 ns |           23.0 ns |      53.1 ns |
+| **Multiplication**            |   28.3 ns |     42.0 ns |           23.9 ns |      55.8 ns |
+| **Multiplication Large**      |   33.2 ns |     44.0 ns |           29.2 ns |       120 ns |
+| **Division**                  |   52.2 ns |      145 ns |           57.8 ns |       276 ns |
+| **Division High Precision**   |   45.9 ns |      121 ns |           46.5 ns |       220 ns |
+| **Unary Minus**               |  0.525 ns |    0.245 ns |          0.366 ns |     0.802 ns |
+| **Addition Assignment**       |   32.0 ns |     50.1 ns |           27.6 ns |      72.5 ns |
+| **Subtraction Assignment**    |   26.4 ns |     34.5 ns |           23.5 ns |      53.1 ns |
+| **Multiplication Assignment** |   27.7 ns |     42.4 ns |           23.5 ns |      56.2 ns |
+| **Division Assignment**       |   51.5 ns |      135 ns |           57.2 ns |       272 ns |
 
 ### Parsing Operations
 
-| Operation                | Linux Clang | Windows MSVC |
-| ------------------------ | ----------: | -----------: |
-| **Parse Integer**        |     11.6 ns |      31.4 ns |
-| **Parse Small Decimal**  |     18.8 ns |      38.7 ns |
-| **Parse Large Decimal**  |     49.4 ns |       148 ns |
-| **Parse High Precision** |     52.3 ns |       158 ns |
-| **Parse Negative**       |     33.6 ns |       112 ns |
-| **FromString Valid**     |     21.8 ns |      54.7 ns |
-| **FromString Invalid**   |     5.29 ns |      16.4 ns |
+| Operation                | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------ | --------: | ----------: | ----------------: | -----------: |
+| **Parse Integer**        |   7.99 ns |     7.07 ns |           9.07 ns |      16.0 ns |
+| **Parse Small Decimal**  |   10.9 ns |     11.7 ns |           11.4 ns |      19.2 ns |
+| **Parse Large Decimal**  |   57.2 ns |     50.4 ns |           56.2 ns |       144 ns |
+| **Parse High Precision** |   59.9 ns |     50.3 ns |           59.3 ns |       173 ns |
+| **Parse Negative**       |   21.1 ns |     23.6 ns |           22.0 ns |      32.8 ns |
+| **FromString Valid**     |   13.2 ns |     12.2 ns |           13.8 ns |      23.5 ns |
+| **FromString Invalid**   |   6.27 ns |     7.21 ns |           10.5 ns |      15.3 ns |
 
 ### Conversion & Formatting
 
-| Operation             | Linux Clang | Windows MSVC |
-| --------------------- | ----------: | -----------: |
-| **ToDouble**          |     1.81 ns |      1.79 ns |
-| **ToBits**            |    0.528 ns |      1.66 ns |
-| **ToString Integer**  |     23.7 ns |      54.4 ns |
-| **ToString Small**    |     26.7 ns |      55.8 ns |
-| **ToString Large**    |     45.6 ns |      70.9 ns |
-| **ToString Negative** |     41.6 ns |      69.1 ns |
+| Operation             | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| --------------------- | --------: | ----------: | ----------------: | -----------: |
+| **ToDouble**          |   2.28 ns |     1.88 ns |           4.05 ns |      1.73 ns |
+| **ToBits**            |  0.887 ns |    0.527 ns |          0.516 ns |      1.46 ns |
+| **ToString Integer**  |   26.1 ns |     22.8 ns |           41.0 ns |      51.6 ns |
+| **ToString Small**    |   28.0 ns |     26.0 ns |           43.0 ns |      54.4 ns |
+| **ToString Large**    |   43.7 ns |     46.5 ns |           64.2 ns |      69.8 ns |
+| **ToString Negative** |   39.6 ns |     45.0 ns |           60.0 ns |      68.4 ns |
 
 ### Comparison Operations
 
-| Operation               | Linux Clang | Windows MSVC |
-| ----------------------- | ----------: | -----------: |
-| **Equality Decimal**    |     6.68 ns |      8.13 ns |
-| **LessThan Decimal**    |     2.84 ns |      8.60 ns |
-| **GreaterThan Decimal** |     2.79 ns |      9.41 ns |
-| **Equality Int32**      |     9.94 ns |      8.39 ns |
-| **Equality Int64**      |     6.98 ns |      8.29 ns |
-| **Equality Uint64**     |     12.9 ns |      18.4 ns |
-| **Equality Double**     |     61.6 ns |      64.3 ns |
-| **LessThan Double**     |     59.4 ns |      65.1 ns |
-| **Equality Float**      |     70.2 ns |      90.3 ns |
-| **Equality Int128**     |     6.52 ns |      12.1 ns |
-| **LessThan Int128**     |     17.7 ns |      35.5 ns |
+| Operation               | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ----------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Equality Decimal**    |   2.82 ns |     6.72 ns |           2.93 ns |      8.54 ns |
+| **LessThan Decimal**    |   3.18 ns |     2.62 ns |           3.37 ns |      8.54 ns |
+| **GreaterThan Decimal** |   3.59 ns |     2.91 ns |           3.60 ns |      9.63 ns |
+| **Equality Int32**      |   3.15 ns |     10.0 ns |           3.01 ns |      9.24 ns |
+| **Equality Int64**      |   3.26 ns |     6.96 ns |           3.00 ns |      9.03 ns |
+| **Equality Uint64**     |   6.87 ns |     12.8 ns |           6.80 ns |      20.1 ns |
+| **Equality Double**     |   65.6 ns |     59.7 ns |            115 ns |      68.4 ns |
+| **LessThan Double**     |   64.7 ns |     58.6 ns |            103 ns |      67.2 ns |
+| **Equality Float**      |   87.2 ns |     72.3 ns |            100 ns |      78.5 ns |
+| **Equality Int128**     |   5.13 ns |     6.61 ns |           1.76 ns |      10.0 ns |
+| **LessThan Int128**     |   12.9 ns |     17.6 ns |           9.77 ns |      32.1 ns |
 
 ### State Checking Operations
 
-| Operation                 | Linux Clang | Windows MSVC |
-| ------------------------- | ----------: | -----------: |
-| **IsZero (Zero)**         |     1.20 ns |      2.38 ns |
-| **IsZero (NonZero)**      |    0.251 ns |     0.811 ns |
-| **IsNegative (Negative)** |    0.990 ns |      2.05 ns |
-| **IsNegative (Positive)** |     7.81 ns |      13.8 ns |
+| Operation                 | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------- | --------: | ----------: | ----------------: | -----------: |
+| **IsZero (Zero)**         |   1.31 ns |     1.17 ns |           1.80 ns |      1.93 ns |
+| **IsZero (NonZero)**      |  0.293 ns |    0.248 ns |          0.235 ns |     0.767 ns |
+| **IsNegative (Negative)** |  0.803 ns |    0.971 ns |           1.69 ns |      1.80 ns |
+| **IsNegative (Positive)** |   4.53 ns |     8.04 ns |           4.33 ns |      12.8 ns |
 
 ### Mathematical Operations
 
-| Operation            | Linux Clang | Windows MSVC |
-| -------------------- | ----------: | -----------: |
-| **Abs Positive**     |     8.35 ns |      13.6 ns |
-| **Abs Negative**     |     1.28 ns |      2.23 ns |
-| **Sqrt**             |      517 ns |      1500 ns |
-| **Sqrt Perfect Sqr** |     35.0 ns |      69.2 ns |
-| **Sqrt Large**       |     4263 ns |     12996 ns |
-| **Truncate**         |     28.5 ns |      66.4 ns |
-| **Floor**            |     29.3 ns |      67.2 ns |
-| **Ceiling**          |     31.8 ns |      73.0 ns |
-| **Round**            |     30.9 ns |      76.7 ns |
+| Operation            | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| -------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Abs Positive**     |   4.84 ns |     8.49 ns |           4.65 ns |      12.3 ns |
+| **Abs Negative**     |   1.30 ns |     1.26 ns |           1.84 ns |      1.97 ns |
+| **Sqrt**             |    403 ns |      504 ns |            405 ns |      1367 ns |
+| **Sqrt Perfect Sqr** |   25.9 ns |     35.1 ns |           49.7 ns |      58.6 ns |
+| **Sqrt Large**       |   2658 ns |     4179 ns |           2727 ns |     10742 ns |
+| **Truncate**         |   18.2 ns |     29.8 ns |           32.1 ns |      60.0 ns |
+| **Floor**            |   18.6 ns |     31.4 ns |           32.1 ns |      61.4 ns |
+| **Ceiling**          |   20.6 ns |     34.4 ns |           39.2 ns |      62.8 ns |
+| **Round**            |   19.6 ns |     34.3 ns |           31.4 ns |      62.8 ns |
 
 ### Free Functions
 
-| Operation          | Linux Clang | Windows MSVC |
-| ------------------ | ----------: | -----------: |
-| **abs() Positive** |     8.44 ns |      14.5 ns |
-| **abs() Negative** |     1.33 ns |      2.30 ns |
-| **sqrt()**         |      545 ns |      1416 ns |
-| **round()**        |     30.9 ns |      64.9 ns |
-| **floor()**        |     27.6 ns |      60.9 ns |
-| **ceil( )**        |     32.0 ns |      64.3 ns |
-| **trunc( )**       |     27.9 ns |      60.2 ns |
+| Operation          | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------ | --------: | ----------: | ----------------: | -----------: |
+| **abs() Positive** |   4.78 ns |     9.87 ns |           4.65 ns |      12.7 ns |
+| **abs() Negative** |   1.32 ns |     1.39 ns |           1.90 ns |      1.99 ns |
+| **sqrt()**         |    402 ns |      548 ns |            426 ns |      1339 ns |
+| **round()**        |   20.7 ns |     31.7 ns |           33.0 ns |      60.9 ns |
+| **floor()**        |   18.4 ns |     29.1 ns |           32.1 ns |      55.8 ns |
+| **ceil( )**        |   20.5 ns |     31.5 ns |           40.1 ns |      64.5 ns |
+| **trunc( )**       |   18.6 ns |     28.4 ns |           32.1 ns |      57.2 ns |
 
 ### Formatting Operations
 
-| Operation           | Linux Clang | Windows MSVC |
-| ------------------- | ----------: | -----------: |
-| **Format**          |      146 ns |       118 ns |
-| **Format Negative** |      151 ns |       117 ns |
+| Operation           | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Format**          |   67.4 ns |     61.1 ns |           88.9 ns |       112 ns |
+| **Format Negative** |   67.3 ns |     60.0 ns |           90.0 ns |       112 ns |
 
 ### Property Accessors & Constants
 
-| Operation              | Linux Clang | Windows MSVC |
-| ---------------------- | ----------: | -----------: |
-| **GetScale**           |    0.235 ns |     0.790 ns |
-| **DecimalPlacesCount** |     2.72 ns |      3.31 ns |
-| **Constant MinValue**  |    0.375 ns |     0.999 ns |
-| **Constant MaxValue**  |    0.230 ns |     0.985 ns |
+| Operation              | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ---------------------- | --------: | ----------: | ----------------: | -----------: |
+| **GetScale**           |  0.238 ns |    0.240 ns |          0.262 ns |     0.753 ns |
+| **DecimalPlacesCount** |   5.67 ns |     2.65 ns |           5.47 ns |      3.00 ns |
+| **Constant MinValue**  |  0.224 ns |    0.324 ns |          0.229 ns |     0.928 ns |
+| **Constant MaxValue**  |  0.225 ns |    0.229 ns |          0.225 ns |     0.941 ns |
 
 ---
 
@@ -158,104 +161,105 @@
 
 ### Construction Benchmarks
 
-| Operation                   | Linux Clang | Windows MSVC |
-| --------------------------- | ----------: | -----------: |
-| **Construct Default**       |    0.225 ns |     0.763 ns |
-| **Construct from Int32**    |    0.276 ns |     0.750 ns |
-| **Construct from Int64**    |    0.229 ns |     0.775 ns |
-| **Construct from Uint64**   |    0.272 ns |     0.751 ns |
-| **Construct from TwoWords** |    0.218 ns |     0.766 ns |
-| **Construct from Float**    |     1.57 ns |      10.1 ns |
-| **Construct from Double**   |      372 ns |       822 ns |
-| **Construct from Decimal**  |     16.3 ns |      23.4 ns |
-| **Copy Construct**          |    0.221 ns |     0.745 ns |
+| Operation                   | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| --------------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Construct Default**       |  0.224 ns |    0.217 ns |          0.240 ns |     0.732 ns |
+| **Construct from Int32**    |  0.222 ns |    0.220 ns |          0.235 ns |     0.715 ns |
+| **Construct from Int64**    |  0.222 ns |    0.221 ns |          0.234 ns |     0.753 ns |
+| **Construct from Uint64**   |  0.229 ns |    0.218 ns |          0.230 ns |     0.732 ns |
+| **Construct from TwoWords** |  0.314 ns |    0.222 ns |          0.234 ns |     0.750 ns |
+| **Construct from Float**    |   2.46 ns |     1.54 ns |           2.61 ns |      9.84 ns |
+| **Construct from Double**   |    366 ns |      368 ns |            558 ns |       802 ns |
+| **Construct from Decimal**  |   8.00 ns |     16.4 ns |           8.37 ns |      23.5 ns |
+| **Copy Construct**          |  0.218 ns |    0.221 ns |          0.229 ns |     0.750 ns |
 
 ### Arithmetic Operations
 
-| Operation                | Linux Clang | Windows MSVC |
-| ------------------------ | ----------: | -----------: |
-| **Addition**             |    0.220 ns |     0.738 ns |
-| **Subtraction**          |    0.220 ns |     0.726 ns |
-| **Multiplication**       |    0.229 ns |      2.74 ns |
-| **Multiplication Large** |    0.227 ns |      2.82 ns |
-| **Division**             |    0.241 ns |      7.06 ns |
-| **Division Large**       |    0.227 ns |       188 ns |
-| **Modulo**               |    0.225 ns |      8.83 ns |
-| **Unary Minus**          |    0.247 ns |     0.738 ns |
+| Operation                | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------ | --------: | ----------: | ----------------: | -----------: |
+| **Addition**             |  0.224 ns |    0.223 ns |          0.230 ns |     0.732 ns |
+| **Subtraction**          |  0.222 ns |    0.222 ns |          0.241 ns |     0.725 ns |
+| **Multiplication**       |  0.220 ns |    0.226 ns |          0.230 ns |      2.65 ns |
+| **Multiplication Large** |  0.253 ns |    0.224 ns |          0.234 ns |      2.76 ns |
+| **Division**             |  0.218 ns |    0.222 ns |          0.225 ns |      7.11 ns |
+| **Division Large**       |  0.227 ns |    0.244 ns |          0.234 ns |       184 ns |
+| **Modulo**               |  0.228 ns |    0.223 ns |          0.229 ns |      8.72 ns |
+| **Unary Minus**          |  0.227 ns |    0.225 ns |          0.225 ns |     0.750 ns |
 
 ### Parsing Operations
 
-| Operation                 | Linux Clang | Windows MSVC |
-| ------------------------- | ----------: | -----------: |
-| **Parse Small Number**    |     3.03 ns |      5.30 ns |
-| **Parse Medium Number**   |     26.1 ns |      47.8 ns |
-| **Parse Large Number**    |     62.7 ns |      97.4 ns |
-| **Parse Negative Number** |     45.9 ns |      76.9 ns |
-| **FromString Valid**      |     44.7 ns |      73.6 ns |
-| **FromString Invalid**    |     1.76 ns |      3.06 ns |
+| Operation                 | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Parse Small Number**    |   3.21 ns |     3.28 ns |           3.30 ns |      3.84 ns |
+| **Parse Medium Number**   |   13.8 ns |     15.1 ns |           16.0 ns |      14.8 ns |
+| **Parse Large Number**    |   61.0 ns |     66.3 ns |           73.2 ns |      99.4 ns |
+| **Parse Negative Number** |   48.0 ns |     46.4 ns |           55.8 ns |      73.2 ns |
+| **FromString Valid**      |   14.6 ns |     14.4 ns |           16.4 ns |      16.5 ns |
+| **FromString ValidLong**  |   48.3 ns |     46.0 ns |           55.8 ns |      82.3 ns |
+| **FromString Invalid**    |   2.23 ns |     2.93 ns |           2.39 ns |      3.61 ns |
 
 ### Conversion & Formatting
 
-| Operation             | Linux Clang | Windows MSVC |
-| --------------------- | ----------: | -----------: |
-| **ToLow**             |    0.223 ns |     0.748 ns |
-| **ToHigh**            |    0.219 ns |     0.753 ns |
-| **ToBits**            |    0.222 ns |     0.533 ns |
-| **ToString Small**    |     7.30 ns |      19.2 ns |
-| **ToString Medium**   |     46.6 ns |      73.6 ns |
-| **ToString Large**    |      158 ns |       508 ns |
-| **ToString Negative** |      136 ns |       513 ns |
+| Operation             | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| --------------------- | --------: | ----------: | ----------------: | -----------: |
+| **ToLow**             |  0.106 ns |    0.234 ns |          0.110 ns |     0.767 ns |
+| **ToHigh**            |  0.107 ns |    0.226 ns |          0.110 ns |     0.715 ns |
+| **ToBits**            |  0.219 ns |    0.223 ns |          0.225 ns |     0.547 ns |
+| **ToString Small**    |   8.85 ns |     7.76 ns |           9.21 ns |      21.0 ns |
+| **ToString Medium**   |   43.1 ns |     45.5 ns |           68.0 ns |      81.6 ns |
+| **ToString Large**    |    293 ns |      150 ns |            328 ns |       562 ns |
+| **ToString Negative** |    294 ns |      139 ns |            330 ns |       502 ns |
 
 ### Comparison Operations
 
-| Operation              | Linux Clang | Windows MSVC |
-| ---------------------- | ----------: | -----------: |
-| **Equality Int128**    |    0.227 ns |     0.727 ns |
-| **LessThan Int128**    |    0.229 ns |     0.741 ns |
-| **GreaterThan Int128** |    0.228 ns |     0.729 ns |
-| **Equality Int64**     |    0.229 ns |     0.733 ns |
-| **LessThan Int64**     |    0.224 ns |     0.746 ns |
-| **Equality Uint64**    |    0.226 ns |     0.746 ns |
-| **Equality Double**    |    0.225 ns |      3.31 ns |
-| **LessThan Double**    |    0.226 ns |      3.32 ns |
-| **Equality Float**     |    0.226 ns |      3.31 ns |
-| **Equality Decimal**   |     8.08 ns |      12.2 ns |
-| **LessThan Decimal**   |     7.01 ns |      12.3 ns |
+| Operation              | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ---------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Equality Int128**    |  0.106 ns |    0.238 ns |          0.110 ns |     0.750 ns |
+| **LessThan Int128**    |  0.111 ns |    0.233 ns |          0.112 ns |     0.767 ns |
+| **GreaterThan Int128** |  0.108 ns |    0.230 ns |          0.109 ns |     0.750 ns |
+| **Equality Int64**     |  0.112 ns |    0.229 ns |          0.110 ns |     0.732 ns |
+| **LessThan Int64**     |  0.109 ns |    0.228 ns |          0.112 ns |     0.802 ns |
+| **Equality Uint64**    |  0.108 ns |    0.227 ns |          0.110 ns |     0.830 ns |
+| **Equality Double**    |  0.107 ns |    0.227 ns |          0.110 ns |      3.22 ns |
+| **LessThan Double**    |  0.107 ns |    0.227 ns |          0.112 ns |      3.22 ns |
+| **Equality Float**     |  0.107 ns |    0.227 ns |          0.112 ns |      3.35 ns |
+| **Equality Decimal**   |   5.32 ns |     8.04 ns |           5.72 ns |      13.1 ns |
+| **LessThan Decimal**   |   4.97 ns |     6.99 ns |           5.44 ns |      12.6 ns |
 
 ### State Checking Operations
 
-| Operation                 | Linux Clang | Windows MSVC |
-| ------------------------- | ----------: | -----------: |
-| **IsZero (Zero)**         |    0.227 ns |     0.741 ns |
-| **IsZero (NonZero)**      |    0.223 ns |     0.736 ns |
-| **IsNegative (Negative)** |    0.225 ns |     0.736 ns |
-| **IsNegative (Positive)** |    0.224 ns |     0.730 ns |
+| Operation                 | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------- | --------: | ----------: | ----------------: | -----------: |
+| **IsZero (Zero)**         |  0.108 ns |    0.228 ns |          0.113 ns |     0.715 ns |
+| **IsZero (NonZero)**      |  0.108 ns |    0.225 ns |          0.106 ns |     0.715 ns |
+| **IsNegative (Negative)** |  0.107 ns |    0.226 ns |          0.112 ns |     0.715 ns |
+| **IsNegative (Positive)** |  0.106 ns |    0.219 ns |          0.110 ns |     0.802 ns |
 
 ### Mathematical Operations
 
-| Operation                | Linux Clang | Windows MSVC |
-| ------------------------ | ----------: | -----------: |
-| **Abs Positive**         |    0.224 ns |     0.755 ns |
-| **Abs Negative**         |    0.224 ns |     0.745 ns |
-| **isqrt**                |     18.0 ns |      51.1 ns |
-| **isqrt Large**          |     18.0 ns |      65.3 ns |
-| **isqrt Perfect Square** |     14.6 ns |      37.3 ns |
+| Operation                | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------------ | --------: | ----------: | ----------------: | -----------: |
+| **Abs Positive**         |  0.222 ns |    0.223 ns |          0.230 ns |     0.730 ns |
+| **Abs Negative**         |  0.224 ns |    0.249 ns |          0.229 ns |     0.732 ns |
+| **isqrt**                |   16.7 ns |     18.4 ns |           46.0 ns |      49.9 ns |
+| **isqrt Large**          |   17.6 ns |     18.3 ns |           47.1 ns |      64.3 ns |
+| **isqrt Perfect Square** |   13.1 ns |     14.7 ns |           35.3 ns |      38.3 ns |
 
 ### Free Functions
 
-| Operation   | Linux Clang | Windows MSVC |
-| ----------- | ----------: | -----------: |
-| **abs()**   |    0.223 ns |     0.731 ns |
-| **isqrt()** |     18.3 ns |      51.7 ns |
-| **sqrt()**  |     27.6 ns |      63.0 ns |
+| Operation   | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ----------- | --------: | ----------: | ----------------: | -----------: |
+| **abs()**   |  0.234 ns |    0.231 ns |          0.230 ns |     0.715 ns |
+| **isqrt()** |   16.3 ns |     18.4 ns |           47.1 ns |      50.6 ns |
+| **sqrt()**  |   25.2 ns |     27.3 ns |           57.8 ns |      61.3 ns |
 
 ### Formatting Operations
 
-| Operation           | Linux Clang | Windows MSVC |
-| ------------------- | ----------: | -----------: |
-| **Format**          |      146 ns |       391 ns |
-| **Format Negative** |      151 ns |       404 ns |
+| Operation           | Linux GCC | Linux Clang | Windows MinGW GCC | Windows MSVC |
+| ------------------- | --------: | ----------: | ----------------: | -----------: |
+| **Format**          |    279 ns |      153 ns |            337 ns |       388 ns |
+| **Format Negative** |    280 ns |      154 ns |            345 ns |       389 ns |
 
 ---
 
-_Updated on Frebruary 02, 2026_
+_Updated on February 03, 2026_
