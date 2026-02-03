@@ -218,7 +218,7 @@ namespace nfx::datatypes
                 // Use 64-bit lookup table for powers 0-19
                 divisor = Int128{ constants::DECIMAL_POWERS_OF_10[scale] };
             }
-            else if( scale >= constants::DECIMAL_EXTENDED_POWER_MIN && scale <= constants::DECIMAL_EXTENDED_POWER_MAX )
+            else if( scale <= constants::DECIMAL_EXTENDED_POWER_MAX )
             {
                 // Use pre-computed 128-bit values for powers 20-28
                 const auto& extended =
