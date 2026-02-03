@@ -8,7 +8,8 @@
 
 ### Changed
 
-- NIL
+- Optimized `Decimal::fromString()` with fast-path parsing for common cases (≤19 digits)
+- Optimized `Int128::fromString()` with fast-path parsing for values fitting in 64 bits (≤20 digits)
 
 ### Deprecated
 
