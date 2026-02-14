@@ -33,7 +33,7 @@ if(NFX_DATATYPES_BUILD_STATIC)
 
     set_target_properties(${PROJECT_NAME}-static
         PROPERTIES
-            OUTPUT_NAME ${PROJECT_NAME}-static-${PROJECT_VERSION}
+            OUTPUT_NAME ${PROJECT_NAME}-static
             ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     )
 
