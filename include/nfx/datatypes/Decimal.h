@@ -167,7 +167,7 @@ namespace nfx::datatypes
      */
     class Decimal final
     {
-        friend struct std::numeric_limits<Decimal>;
+        friend class std::numeric_limits<Decimal>;
 
     public:
         //----------------------------------------------
