@@ -66,10 +66,10 @@ jobs:
                 -G "Unix Makefiles" \
                 -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
                 -DNFX_DATATYPES_BUILD_STATIC=ON \
-                -DNFX_DATATYPES_BUILD_SHARED=OFF \
+                -DNFX_DATATYPES_BUILD_SHARED=ON \
                 -DNFX_DATATYPES_BUILD_TESTS=ON \
-                -DNFX_DATATYPES_BUILD_BENCHMARKS=OFF \
-                -DNFX_DATATYPES_BUILD_SAMPLES=OFF \
+                -DNFX_DATATYPES_BUILD_BENCHMARKS=ON \
+                -DNFX_DATATYPES_BUILD_SAMPLES=ON \
                 -DNFX_DATATYPES_BUILD_DOCUMENTATION=OFF
 
       - name: Build
