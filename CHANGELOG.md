@@ -26,6 +26,17 @@
 
 - NIL
 
+## [0.4.1] - 2026-02-14
+
+### Changed
+
+- Enabled strict compiler warnings (`-Werror`, `/WX`) for GCC/Clang and MSVC builds
+
+### Fixed
+
+- Fixed MSVC warning by changing `friend struct` to `friend class` for `std::numeric_limits<Decimal>` specialization
+- Fixed static library output name to remove version suffix for consistent naming
+
 ## [0.4.0] - 2026-02-03
 
 ### Changed
