@@ -5,13 +5,13 @@ on:
     branches: [main]
     paths-ignore:
       - "**/*.md"
-      - "LICENSE.txt"
+      - "LICENSE"
       - ".gitignore"
   pull_request:
     branches: [main]
     paths-ignore:
       - "**/*.md"
-      - "LICENSE.txt"
+      - "LICENSE"
       - ".gitignore"
   schedule:
     - cron: "0 0 * * 1" # Weekly on Mondays at midnight UTC

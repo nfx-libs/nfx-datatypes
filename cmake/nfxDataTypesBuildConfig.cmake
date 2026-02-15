@@ -19,7 +19,7 @@ endif()
 # --- Ensure at least one library type is built ---
 if(NOT NFX_DATATYPES_BUILD_STATIC AND NOT NFX_DATATYPES_BUILD_SHARED)
     message(WARNING "Neither NFX_DATATYPES_BUILD_STATIC nor NFX_DATATYPES_BUILD_SHARED is enabled.")
-    
+
     if(DEFINED CACHE{NFX_DATATYPES_BUILD_STATIC} AND DEFINED CACHE{NFX_DATATYPES_BUILD_SHARED})
         message(STATUS "Both library types were explicitly disabled.")
         message(STATUS "Applying fallback: Enabling static library build")
@@ -53,24 +53,7 @@ endif()
 # Project metadata
 #----------------------------------------------
 
-set(NFX_DATATYPES_LICENSE "MIT")
-set(NFX_DATATYPES_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
-
-#----------------------------------------------
-# Install prefix configuration
-#----------------------------------------------
-
-include(GNUInstallDirs)
-
-# Set default installation path to nfx
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    if(WIN32)
-        set(CMAKE_INSTALL_PREFIX "C:/Program Files/nfx" CACHE PATH "Installation directory" FORCE)
-    else()
-        set(CMAKE_INSTALL_PREFIX "/usr/local/nfx" CACHE PATH "Installation directory" FORCE)
-    endif()
-    message(STATUS "Setting install prefix to '${CMAKE_INSTALL_PREFIX}'")
-endif()
+set(NFX_DATATYPES_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 #----------------------------------------------
 # Directory configuration
