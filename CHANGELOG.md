@@ -26,6 +26,24 @@
 
 - NIL
 
+## [0.5.0] - 2026-02-15
+
+### Added
+
+- Added `NFX_DATATYPES_ENABLE_SIMD` option to control CPU-specific optimizations (useful for WebAssembly builds)
+
+### Changed
+
+- Simplified build system configuration and removed binary packaging options
+- Updated CMake to use `target_compile_features` for C++20 standard enforcement
+
+### Removed
+
+- Removed binary packaging support (DEB, RPM, WIX, Archive) - source packages only (TGZ/ZIP)
+- Removed custom install prefix configuration (now uses standard CMake defaults)
+- Removed release workflow binary packaging jobs
+- Disabled Doxygen `CALL_GRAPH` and `CALLER_GRAPH` for faster documentation generation
+
 ## [0.4.1] - 2026-02-14
 
 ### Changed

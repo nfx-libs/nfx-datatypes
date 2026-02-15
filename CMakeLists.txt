@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(nfx-datatypes
-    VERSION 0.4.1
+    VERSION 0.5.0
     DESCRIPTION "Cross-platform C++ library with high-precision Int128 and Decimal datatypes"
     HOMEPAGE_URL "https://github.com/nfx-libs/nfx-datatypes"
     LANGUAGES CXX
@@ -45,7 +45,7 @@ option(NFX_DATATYPES_BUILD_BENCHMARKS    "Build benchmarks"                 OFF)
 option(NFX_DATATYPES_BUILD_DOCUMENTATION "Build Doxygen documentation"      OFF)
 
 # --- Performance options ---
-option(NFX_DATATYPES_ENABLE_NATIVE_OPTS  "Enable native CPU optimizations"  ON )
+option(NFX_DATATYPES_ENABLE_SIMD         "Enable native CPU optimizations"  ON )
 
 # --- Installation and packaging ---
 option(NFX_DATATYPES_INSTALL_PROJECT     "Install project"                  OFF)

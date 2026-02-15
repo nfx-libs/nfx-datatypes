@@ -73,7 +73,7 @@ function(configure_target target_name)
     )
 
     # --- CPU optimizations (Release/RelWithDebInfo only) ---
-    if(NFX_DATATYPES_ENABLE_NATIVE_OPTS)
+    if(NFX_DATATYPES_ENABLE_SIMD)
         target_compile_options(${target_name}
             PRIVATE
                 $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:/arch:AVX2>
@@ -115,7 +115,7 @@ endif()
 # Build configuration summary
 #----------------------------------------------
 
-if(NFX_DATATYPES_ENABLE_NATIVE_OPTS)
+if(NFX_DATATYPES_ENABLE_SIMD)
     message(STATUS "nfx-datatypes: Native CPU optimizations enabled (Release/RelWithDebInfo builds)")
 else()
     message(STATUS "nfx-datatypes: Native CPU optimizations disabled (suitable for WebAssembly)")

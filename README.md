@@ -2,7 +2,7 @@
 
 <!-- Project Info -->
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/nfx-libs/nfx-datatypes/blob/main/LICENSE.txt) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/nfx-libs/nfx-datatypes?style=flat-square)](https://github.com/nfx-libs/nfx-datatypes/releases) [![GitHub tag (latest by date)](https://img.shields.io/github/tag/nfx-libs/nfx-datatypes?style=flat-square)](https://github.com/nfx-libs/nfx-datatypes/tags)<br/>
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/nfx-libs/nfx-datatypes/blob/main/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/nfx-libs/nfx-datatypes?style=flat-square)](https://github.com/nfx-libs/nfx-datatypes/releases) [![GitHub tag (latest by date)](https://img.shields.io/github/tag/nfx-libs/nfx-datatypes?style=flat-square)](https://github.com/nfx-libs/nfx-datatypes/tags)<br/>
 
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue?style=flat-square) ![CMake](https://img.shields.io/badge/CMake-3.20%2B-green.svg?style=flat-square) ![Cross Platform](https://img.shields.io/badge/Platform-Linux_Windows-lightgrey?style=flat-square)
 
@@ -77,21 +77,21 @@ nfx-datatypes is a modern C++20 library providing numeric types for applications
 
 ```cmake
 # Build options
-option(NFX_DATATYPES_BUILD_STATIC         "Build static library"               OFF )
-option(NFX_DATATYPES_BUILD_SHARED         "Build shared library"               OFF )
+option(NFX_DATATYPES_BUILD_STATIC         "Build static library"             ON )
+option(NFX_DATATYPES_BUILD_SHARED         "Build shared library"             OFF)
 
 # Development options
-option(NFX_DATATYPES_BUILD_TESTS          "Build tests"                        OFF )
-option(NFX_DATATYPES_BUILD_SAMPLES        "Build samples"                      OFF )
-option(NFX_DATATYPES_BUILD_BENCHMARKS     "Build benchmarks"                   OFF )
-option(NFX_DATATYPES_BUILD_DOCUMENTATION  "Build Doxygen documentation"        OFF )
+option(NFX_DATATYPES_BUILD_TESTS          "Build tests"                      OFF)
+option(NFX_DATATYPES_BUILD_SAMPLES        "Build samples"                    OFF)
+option(NFX_DATATYPES_BUILD_BENCHMARKS     "Build benchmarks"                 OFF)
+option(NFX_DATATYPES_BUILD_DOCUMENTATION  "Build Doxygen documentation"      OFF)
 
 # Performance options
-option(NFX_DATATYPES_ENABLE_NATIVE_OPTS   "Enable native CPU optimizations"    ON  )
+option(NFX_DATATYPES_ENABLE_SIMD          "Enable native CPU optimizations"  ON )
 
 # Installation and packaging
-option(NFX_DATATYPES_INSTALL_PROJECT      "Install project"                    OFF )
-option(NFX_DATATYPES_PACKAGE_SOURCE       "Enable source package generation"   OFF )
+option(NFX_DATATYPES_INSTALL_PROJECT      "Install project"                  OFF)
+option(NFX_DATATYPES_PACKAGE_SOURCE       "Enable source package generation" OFF)
 ```
 
 ### Using in Your Project
@@ -416,4 +416,4 @@ All dependencies are automatically fetched via CMake FetchContent when building 
 
 ---
 
-_Updated on Februrary 15, 2026_
+_Updated on February 15, 2026_
