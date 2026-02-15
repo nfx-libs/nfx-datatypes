@@ -44,6 +44,9 @@ option(NFX_DATATYPES_BUILD_SAMPLES       "Build samples"                    OFF)
 option(NFX_DATATYPES_BUILD_BENCHMARKS    "Build benchmarks"                 OFF)
 option(NFX_DATATYPES_BUILD_DOCUMENTATION "Build Doxygen documentation"      OFF)
 
+# --- Performance options ---
+option(NFX_DATATYPES_ENABLE_NATIVE_OPTS  "Enable native CPU optimizations"  ON )
+
 # --- Installation and packaging ---
 option(NFX_DATATYPES_INSTALL_PROJECT     "Install project"                  OFF)
 option(NFX_DATATYPES_PACKAGE_SOURCE      "Enable source package generation" OFF)

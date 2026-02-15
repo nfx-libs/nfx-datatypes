@@ -54,6 +54,12 @@ function(configure_target target_name)
             ${NFX_DATATYPES_SOURCE_DIR}
     )
 
+    # --- C++20 standard ---
+    target_compile_features(${target_name}
+        PUBLIC
+            cxx_std_20
+    )
+
     # --- Properties ---
     set_target_properties(${target_name}
         PROPERTIES
@@ -66,12 +72,14 @@ function(configure_target target_name)
             POSITION_INDEPENDENT_CODE ON
     )
 
-    # --- Enable specific CPU features ---
-    target_compile_options(${target_name}
-        PRIVATE
-            $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
-            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-march=native>
-    )
+    # --- CPU optimizations (Release/RelWithDebInfo only) ---
+    if(NFX_DATATYPES_ENABLE_NATIVE_OPTS)
+        target_compile_options(${target_name}
+            PRIVATE
+                $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:/arch:AVX2>
+                $<$<AND:$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:-march=native>
+        )
+    endif()
 
     # --- Compiler warnings ---
     target_compile_options(${target_name}
@@ -101,4 +109,14 @@ endif()
 
 if(NFX_DATATYPES_BUILD_STATIC)
     configure_target(${PROJECT_NAME}-static)
+endif()
+
+#----------------------------------------------
+# Build configuration summary
+#----------------------------------------------
+
+if(NFX_DATATYPES_ENABLE_NATIVE_OPTS)
+    message(STATUS "nfx-datatypes: Native CPU optimizations enabled (Release/RelWithDebInfo builds)")
+else()
+    message(STATUS "nfx-datatypes: Native CPU optimizations disabled (suitable for WebAssembly)")
 endif()

@@ -86,15 +86,12 @@ option(NFX_DATATYPES_BUILD_SAMPLES        "Build samples"                      O
 option(NFX_DATATYPES_BUILD_BENCHMARKS     "Build benchmarks"                   OFF )
 option(NFX_DATATYPES_BUILD_DOCUMENTATION  "Build Doxygen documentation"        OFF )
 
-# Installation
-option(NFX_DATATYPES_INSTALL_PROJECT      "Install project"                    OFF )
+# Performance options
+option(NFX_DATATYPES_ENABLE_NATIVE_OPTS   "Enable native CPU optimizations"    ON  )
 
-# Packaging
+# Installation and packaging
+option(NFX_DATATYPES_INSTALL_PROJECT      "Install project"                    OFF )
 option(NFX_DATATYPES_PACKAGE_SOURCE       "Enable source package generation"   OFF )
-option(NFX_DATATYPES_PACKAGE_ARCHIVE      "Enable TGZ/ZIP package generation"  OFF )
-option(NFX_DATATYPES_PACKAGE_DEB          "Enable DEB package generation"      OFF )
-option(NFX_DATATYPES_PACKAGE_RPM          "Enable RPM package generation"      OFF )
-option(NFX_DATATYPES_PACKAGE_WIX          "Enable WiX MSI installer"           OFF )
 ```
 
 ### Using in Your Project
@@ -380,56 +377,6 @@ Sum: 1111111110111111111011111111100
 Equals 0.3? Yes
 ```
 
-## Installation & Packaging
-
-nfx-datatypes provides packaging options for distribution.
-
-### Package Generation
-
-```bash
-# Configure with packaging options
-cmake .. -DCMAKE_BUILD_TYPE=Release \
-         -DNFX_DATATYPES_BUILD_STATIC=ON \
-         -DNFX_DATATYPES_BUILD_SHARED=ON \
-         -DNFX_DATATYPES_PACKAGE_ARCHIVE=ON \
-         -DNFX_DATATYPES_PACKAGE_DEB=ON \
-         -DNFX_DATATYPES_PACKAGE_RPM=ON
-
-# Generate binary packages
-cmake --build . --target package
-# or
-cd build && cpack
-
-# Generate source packages
-cd build && cpack --config CPackSourceConfig.cmake
-```
-
-### Supported Package Formats
-
-| Format      | Platform       | Description                        | Requirements |
-| ----------- | -------------- | ---------------------------------- | ------------ |
-| **TGZ/ZIP** | Cross-platform | Compressed archive packages        | None         |
-| **DEB**     | Debian/Ubuntu  | Native Debian packages             | `dpkg-dev`   |
-| **RPM**     | RedHat/SUSE    | Native RPM packages                | `rpm-build`  |
-| **WiX**     | Windows        | Professional MSI installer         | `WiX 3.11+`  |
-| **Source**  | Cross-platform | Source code distribution (TGZ+ZIP) | None         |
-
-### Installation
-
-```bash
-# Linux (DEB-based systems)
-sudo dpkg -i nfx-datatypes_*_amd64.deb
-
-# Linux (RPM-based systems)
-sudo rpm -ivh nfx-datatypes-*-Linux.rpm
-
-# Windows (MSI installer)
-nfx-datatypes-0.1.0-MSVC.msi
-
-# Manual installation (extract archive)
-tar -xzf nfx-datatypes-*-Linux.tar.gz -C /usr/local/
-```
-
 ## Project Structure
 
 ```
@@ -469,4 +416,4 @@ All dependencies are automatically fetched via CMake FetchContent when building 
 
 ---
 
-_Updated on November 24, 2025_
+_Updated on Februrary 15, 2026_
